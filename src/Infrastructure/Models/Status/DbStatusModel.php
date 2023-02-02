@@ -1,26 +1,24 @@
 <?php
 
-namespace App\Infrastructure\Persistence\Sections;
-
+namespace App\Infrastructure\Models\Status;
 
 use App\Infrastructure\Models\Database;
-use App\Infrastructure\Models\Sections\SectionModelInterface;
 
-class DbSection implements SectionModelInterface {
+class DbStatusModel implements StatusModelInterface
+{
     protected $db;
 
     public function __construct(Database $db){
         $this->db = $db;
     }
-
     public function getByID($params)
     {
-        $id = array_key_exists("id", $params) ? $params["id"] : null;
-        if ($id) {
-            $sql = "SELECT * FROM sections WHERE id = :section_id";
+        $status_id = array_key_exists("id", $params) ? $params["status_id"] : null;
+        if ($status_id) {
+            $sql = "SELECT * FROM status WHERE id = :status_id";
 
             $this->db->query($sql);
-            $this->db->bind(":section_id", $id);
+            $this->db->bind(":status_id", $status_id);
 
             return $this->db->single();
         }
@@ -29,12 +27,12 @@ class DbSection implements SectionModelInterface {
 
     public function getAll($params, $queryParam = []): array
     {
-        $tab_id = array_key_exists("tab_id", $params) ? $params["tab_id"] : null;
-        if ($tab_id){
-            $sql = "SELECT * FROM sections WHERE tab_id= :tab_id";
+        $user_id = array_key_exists("user_id", $params) ? $params["user_id"] : null;
+        if ($user_id) {
+            $sql = "SELECT * FROM status WHERE user_id = :user_id";
 
             $this->db->query($sql);
-            $this->db->bind(":tab_id", $tab_id);
+            $this->db->bind(":user_id", $user_id);
 
             return $this->db->result_set();
         }
@@ -43,16 +41,17 @@ class DbSection implements SectionModelInterface {
 
     public function create_element($params): bool
     {
-        $tab_id = array_key_exists("tab_id", $params) ? $params["tab_id"] : null;
+
+        $user_id = array_key_exists("user_id", $params) ? $params["user_id"] : null;
         $name = array_key_exists("name", $params) ? $params["name"] : null;
 
-        if ($tab_id && $name) {
-            $sql = "INSERT INTO sections (name, tab_id)
-                VALUE (:name,:tab_id)";
+        if ($user_id && $name) {
+            $sql = "INSERT INTO status (name, user_id)
+                VALUE (:name,:user_id)";
 
             $this->db->query($sql);
+            $this->db->bind(":user_id", $user_id);
             $this->db->bind(":name", $name);
-            $this->db->bind(":tab_id", $tab_id);
 
             return $this->db->execute();
         }
@@ -61,10 +60,11 @@ class DbSection implements SectionModelInterface {
 
     public function edit_element($params): bool
     {
+
         $id = array_key_exists("id", $params) ? $params["id"] : null;
         $name = array_key_exists("name", $params) ? $params["name"] : null;
         if ($id && $name) {
-            $sql = "UPDATE sections 
+            $sql = "UPDATE status 
                 SET name = :name
                 WHERE id = :id";
 
@@ -80,7 +80,7 @@ class DbSection implements SectionModelInterface {
     {
         $id = array_key_exists("id", $params) ? $params["id"] : null;
         if ($id) {
-            $sql = "DELETE FROM sections 
+            $sql = "DELETE FROM status 
                 WHERE id = :id";
             $this->db->query($sql);
             $this->db->bind(":id", $id);

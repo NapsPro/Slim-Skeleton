@@ -28,41 +28,40 @@ return function (App $app) {
         $group->get("/logout", UserControllerInterface::class.":logout");
         $group->post("/register",UserControllerInterface::class.":register");
     });
-
     //-------------------- Tickets -----------------------
     $app->group("/tickets", function (Group $group){
         $group->get("",TicketControllerInterface::class.":getAll");
         $group->get("/{ticket_slug}", TicketControllerInterface::class.":getElement");
         $group->put("/{ticket_slug}", TicketControllerInterface::class.":editElement");
         $group->post("/create", TicketControllerInterface::class.":createElement");
-        $group->delete("/{id}", TicketControllerInterface::class.":deleteElement");
+        $group->delete("/{id:[0-9]+}", TicketControllerInterface::class.":deleteElement");
     });
     //-------------------- Tabs -----------------------
     $app->group("/{ticket_slug}/tabs", function (Group $group){
         $group->get("",TabControllerInterface::class.":getAll");
-        $group->get("/{id}", TabControllerInterface::class.":getElement");
-        $group->put("/{id}", TabControllerInterface::class.":editElement");
+        $group->get("/{id:[0-9]+}", TabControllerInterface::class.":getElement");
+        $group->put("/{id:[0-9]+}", TabControllerInterface::class.":editElement");
         $group->post("/create", TabControllerInterface::class.":createElement");
-        $group->delete("/{id}", TabControllerInterface::class.":deleteElement");
+        $group->delete("/{id:[0-9]+}", TabControllerInterface::class.":deleteElement");
     });
     //---------------- Section -----------------
-    $app->group("/{tab_id}/sections", function (Group $group){
+    $app->group("/{tab_id:[0-9]+}/sections", function (Group $group){
         $group->get("", SectionControllerInterface::class.":getAll");
-        $group->get("/{id}", SectionControllerInterface::class.":getElement");
-        $group->put("/{id}", SectionControllerInterface::class.":editElement");
+        $group->get("/{id:[0-9]+}", SectionControllerInterface::class.":getElement");
+        $group->put("/{id:[0-9]+}", SectionControllerInterface::class.":editElement");
         $group->post("/create", SectionControllerInterface::class.":createElement");
-        $group->delete("/{id}", SectionControllerInterface::class.":deleteElement");
+        $group->delete("/{id:[0-9]+}", SectionControllerInterface::class.":deleteElement");
     });
     //------------------- Tasks ------------------
-    $app->group("/{section_id}", function (Group $group){
+    $app->group("/{section_id:[0-9]+}/task", function (Group $group){
         $group->map(["GET","POST","PUT","DELETE"],"",TaskControllerInterface::class."distributor");
     });
     //------------------ Status ------------------
     $app->group("/status", function (Group $group) {
         $group->get("", StatusControllerInterface::class.":getAll");
-        $group->get("/{id}", StatusControllerInterface::class.":getElement");
-        $group->put("/{id}", StatusControllerInterface::class.":editElement");
+        $group->get("/{id:[0-9]+}", StatusControllerInterface::class.":getElement");
+        $group->put("/{id:[0-9]+}", StatusControllerInterface::class.":editElement");
         $group->post("/create", StatusControllerInterface::class.":createElement");
-        $group->delete("/{id}", StatusControllerInterface::class.":deleteElement");
+        $group->delete("/{id:[0-9]+}", StatusControllerInterface::class.":deleteElement");
     });
 };

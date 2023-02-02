@@ -16,11 +16,14 @@ class TicketController implements TicketControllerInterface
     public function __construct(TicketModelInterface $model){
         $this->model = $model;
     }
-    public function getAll(Request $request, Response $response, $args): array
+    public function getAll(Request $request, Response $response, $args): Response
     {
-        // TODO function getUserId() && isLogin(user) helper functions
+        $tasks = $this->model->getAll(["user_id"=>1]); // TODO change To userLogin ID
+        $response->getBody()->write(json_encode($tasks));
+        $response->withHeader("Content-Type","application/json")->withStatus(200);
 
-      return $this->model->getAll($args); // TODO change To userLogin ID
+        return $response;
+
     }
 
     public function getElement(Request $request, Response $response, $args): Response

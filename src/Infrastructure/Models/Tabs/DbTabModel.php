@@ -1,24 +1,25 @@
 <?php
 
-namespace App\Infrastructure\Models\Status;
+namespace App\Infrastructure\Models\Tabs;
 
 use App\Infrastructure\Models\Database;
 
-class DbStatus implements StatusModelInterface
+class DbTabModel implements TabsModelInterface
 {
     protected $db;
 
     public function __construct(Database $db){
         $this->db = $db;
     }
+
     public function getByID($params)
     {
-        $status_id = array_key_exists("id", $params) ? $params["status_id"] : null;
-        if ($status_id) {
-            $sql = "SELECT * FROM status WHERE id = :status_id";
+        $id = array_key_exists("id", $params) ? $params["id"] : null;
+        if ($id) {
+            $sql = "SELECT * FROM tabs WHERE id = :tab_id";
 
             $this->db->query($sql);
-            $this->db->bind(":status_id", $status_id);
+            $this->db->bind(":tab_id", $id);
 
             return $this->db->single();
         }
@@ -27,29 +28,31 @@ class DbStatus implements StatusModelInterface
 
     public function getAll($params, $queryParam = []): array
     {
-        $user_id = array_key_exists("user_id", $params) ? $params["user_id"] : null;
-        if ($user_id) {
-            $sql = "SELECT * FROM status WHERE user_id = :user_id";
+        $slug = array_key_exists("ticket_slug", $params) ? $params["ticket_slug"] : null;
+        if ($slug){
+            $ticket_name = explode("-",$slug)[1];
 
+            $sql = "SELECT * FROM tabs WHERE tabs.ticket_name = :ticket_name";
             $this->db->query($sql);
-            $this->db->bind(":user_id", $user_id);
-
+            $this->db->bind(":ticket_name", $ticket_name);
             return $this->db->result_set();
-        }
+            }
+
         return [];
+
     }
 
     public function create_element($params): bool
     {
-        $user_id = array_key_exists("user_id", $params) ? $params["user_id"] : null;
+        $ticket_name = array_key_exists("ticket_name", $params) ? $params["ticket_name"] : null;
         $name = array_key_exists("name", $params) ? $params["name"] : null;
 
-        if ($user_id && $name) {
-            $sql = "INSERT INTO status (name, user_id)
-                VALUE (:name,:user_id)";
+        if ($ticket_name && $name) {
+            $sql = "INSERT INTO tabs (name, ticket_name) 
+                    VALUE (:name,:ticket_name)";
 
             $this->db->query($sql);
-            $this->db->bind(":user_id", $user_id);
+            $this->db->bind(":ticket_name", $ticket_name);
             $this->db->bind(":name", $name);
 
             return $this->db->execute();
@@ -62,13 +65,13 @@ class DbStatus implements StatusModelInterface
         $id = array_key_exists("id", $params) ? $params["id"] : null;
         $name = array_key_exists("name", $params) ? $params["name"] : null;
         if ($id && $name) {
-            $sql = "UPDATE status 
+            $sql = "UPDATE tabs 
                 SET name = :name
                 WHERE id = :id";
 
             $this->db->query($sql);
+            $this->db->bind(":id", $id);
             $this->db->bind(":name", $name);
-
             return $this->db->execute();
         }
         return false;
@@ -76,15 +79,16 @@ class DbStatus implements StatusModelInterface
 
     public function delete_element($params): bool
     {
-        $id = array_key_exists("id", $params) ? $params["id"] : null;
-        if ($id) {
-            $sql = "DELETE FROM status 
+        $slug = array_key_exists("ticket_slug", $params) ? $params["ticket_slug"] : null;
+        if ($slug){
+            $id = explode("-",$slug)[1];
+            $sql = "DELETE FROM tabs 
                 WHERE id = :id";
             $this->db->query($sql);
             $this->db->bind(":id", $id);
-
             return $this->db->execute();
         }
+
         return false;
     }
 }

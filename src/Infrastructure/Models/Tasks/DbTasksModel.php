@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Infrastructure\Models\DbTasks;
+namespace App\Infrastructure\Models\Tasks;
 
 use App\Infrastructure\Models\Database;
 use App\Infrastructure\Models\Tasks\TasksModelInterface;
 
 
-class DbTasks implements TasksModelInterface
+class DbTasksModel implements TasksModelInterface
 {
     protected $db;
 

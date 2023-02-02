@@ -43,18 +43,18 @@ class DbTicketModel implements TicketModelInterface
 
     public function create_element($params): bool
     {
-        $id = array_key_exists("id", $params) ? $params["id"] : null;
+        $user_id = array_key_exists("user_id", $params) ? $params["user_id"] : null;
         $status_id = array_key_exists("status_id", $params) ? $params["status_id"] : 1;
         $name = array_key_exists("name", $params) ? $params["name"] : null;
 
-        if ($id && $status_id && $name){
+        if ($user_id && $status_id && $name){
             $sql = "INSERT INTO tickets (name, status_id, user_id, slug) 
                 VALUE (:name,:status_id,:user_id,:slug)";
 
             $slug = "T-".$name;
 
             $this->db->query($sql);
-            $this->db->bind(":user_id", $id);
+            $this->db->bind(":user_id", $user_id);
             $this->db->bind(":name", $name);
             $this->db->bind(":status_id", $status_id);
             $this->db->bind(":slug", $slug);
@@ -73,14 +73,13 @@ class DbTicketModel implements TicketModelInterface
         if ($id && $status_id && $name) {
             $sql = "UPDATE tickets 
                 SET name = :name,
-                user_id = :user_id,
                 status_id = :status_id,
                 slug = :slug
                 WHERE id = :id";
 
             $slug = "T-".$name;
             $this->db->query($sql);
-            $this->db->bind(":user_id", $id);
+            $this->db->bind(":id", $id);
             $this->db->bind(":name", $name);
             $this->db->bind(":status_id", $status_id);
             $this->db->bind(":slug", $slug);

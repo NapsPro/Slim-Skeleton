@@ -36,6 +36,8 @@ class TabController implements TabControllerInterface
 
     public function editElement(Request $request, Response $response, $args): Response
     {
+        //TODO add args to request body so we dont need to pass the id
+
         return ($this->model->edit_element($request->getParsedBody())) ?
             $response->withStatus(200): $response->withStatus(406);
     }

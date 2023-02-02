@@ -38,6 +38,7 @@ class StatusController implements StatusControllerInterface
 
     public function editElement(Request $request, Response $response, $args): Response
     {
+
         return ($this->model->edit_element($request->getParsedBody())) ?
             $response->withStatus(200): $response->withStatus(406);
     }
