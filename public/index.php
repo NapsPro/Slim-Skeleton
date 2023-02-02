@@ -13,6 +13,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 // Instantiate PHP-DI ContainerBuilder
 $containerBuilder = new ContainerBuilder();
+$containerBuilder->useAutowiring(true);
 
 if (false) { // Should be set to true in production
 	$containerBuilder->enableCompilation(__DIR__ . '/../var/cache');
@@ -71,6 +72,7 @@ $app->addRoutingMiddleware();
 // Add Error Middleware
 $errorMiddleware = $app->addErrorMiddleware($displayErrorDetails, $logError, $logErrorDetails);
 $errorMiddleware->setDefaultErrorHandler($errorHandler);
+
 
 // Run App & Emit Response
 $response = $app->handle($request);

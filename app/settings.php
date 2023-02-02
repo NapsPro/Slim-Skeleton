@@ -6,6 +6,7 @@ use App\Application\Settings\SettingsInterface;
 use DI\ContainerBuilder;
 use Monolog\Logger;
 
+
 return function (ContainerBuilder $containerBuilder) {
 
     // Global Settings Object
@@ -16,7 +17,7 @@ return function (ContainerBuilder $containerBuilder) {
                 'logError'            => false,
                 'logErrorDetails'     => false,
                 'logger' => [
-                    'name' => 'slim-app',
+                    'name' => "André",
                     'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/app.log',
                     'level' => Logger::DEBUG,
                 ],

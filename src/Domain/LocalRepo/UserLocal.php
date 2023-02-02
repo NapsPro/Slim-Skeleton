@@ -1,38 +1,21 @@
 <?php
+
 declare(strict_types=1);
 
-namespace App\Domain\User;
+namespace App\Domain\LocalRepo;
 
 use JsonSerializable;
 
-class User implements JsonSerializable
+class UserLocal implements JsonSerializable
 {
-    /**
-     * @var int|null
-     */
-    private $id;
+    private  $id;
 
-    /**
-     * @var string
-     */
-    private $username;
+    private  $username;
 
-    /**
-     * @var string
-     */
-    private $firstName;
+    private  $firstName;
 
-    /**
-     * @var string
-     */
-    private $lastName;
+    private  $lastName;
 
-    /**
-     * @param int|null  $id
-     * @param string    $username
-     * @param string    $firstName
-     * @param string    $lastName
-     */
     public function __construct(?int $id, string $username, string $firstName, string $lastName)
     {
         $this->id = $id;
@@ -41,42 +24,28 @@ class User implements JsonSerializable
         $this->lastName = ucfirst($lastName);
     }
 
-    /**
-     * @return int|null
-     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
     public function getUsername(): string
     {
         return $this->username;
     }
 
-    /**
-     * @return string
-     */
     public function getFirstName(): string
     {
         return $this->firstName;
     }
 
-    /**
-     * @return string
-     */
     public function getLastName(): string
     {
         return $this->lastName;
     }
 
-    /**
-     * @return array
-     */
-    public function jsonSerialize()
+    #[\ReturnTypeWillChange]
+    public function jsonSerialize(): array
     {
         return [
             'id' => $this->id,
