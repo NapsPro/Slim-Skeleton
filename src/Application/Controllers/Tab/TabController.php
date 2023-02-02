@@ -2,7 +2,7 @@
 
 namespace App\Application\Controllers\Tab;
 
-use App\Domain\CrudOp;
+use App\Infrastructure\Models\Tabs\TabsModelInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -10,7 +10,7 @@ class TabController implements TabControllerInterface
 {
     private $model;
 
-    public function __construct(CrudOp $model){
+    public function __construct(TabsModelInterface $model){
         $this->model = $model;
     }
 

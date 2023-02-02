@@ -27,50 +27,66 @@ class DbSection implements SectionModelInterface {
         return null;
     }
 
-    public function getAll($id, $queryParam = []): array
+    public function getAll($params, $queryParam = []): array
     {
+        $tab_id = array_key_exists("tab_id", $params) ? $params["tab_id"] : null;
+        if ($tab_id){
+            $sql = "SELECT * FROM sections WHERE tab_id= :tab_id";
 
-        $sql = "SELECT * FROM sections WHERE tab_id= :tab_id";
+            $this->db->query($sql);
+            $this->db->bind(":tab_id", $tab_id);
 
-        $this->db->query($sql);
-        $this->db->bind(":tab_id", $id);
-
-        return $this->db->result_set();
+            return $this->db->result_set();
+        }
+        return [];
     }
 
-    public function create_element($name, $id, $tab_id = 1): bool
+    public function create_element($params): bool
     {
-        $sql = "INSERT INTO sections (id, name, tab_id)
-                VALUE (:name,:id, :tab_id)";
+        $tab_id = array_key_exists("tab_id", $params) ? $params["tab_id"] : null;
+        $name = array_key_exists("name", $params) ? $params["name"] : null;
 
-        $this->db->query($sql);
-        $this->db->bind(":id", $id);
-        $this->db->bind(":name", $name);
-        $this->db->bind(":tab_id", $tab_id);
+        if ($tab_id && $name) {
+            $sql = "INSERT INTO sections (name, tab_id)
+                VALUE (:name,:tab_id)";
 
-        return $this->db->execute();
+            $this->db->query($sql);
+            $this->db->bind(":name", $name);
+            $this->db->bind(":tab_id", $tab_id);
 
+            return $this->db->execute();
+        }
+        return false;
     }
 
-    public function edit_element($id, $name): bool
+    public function edit_element($params): bool
     {
-        $sql = "UPDATE sections 
+        $id = array_key_exists("id", $params) ? $params["id"] : null;
+        $name = array_key_exists("name", $params) ? $params["name"] : null;
+        if ($id && $name) {
+            $sql = "UPDATE sections 
                 SET name = :name
                 WHERE id = :id";
 
-        $this->db->query($sql);
-        $this->db->bind(":name", $name);
+            $this->db->query($sql);
+            $this->db->bind(":name", $name);
 
-        return $this->db->execute();
+            return $this->db->execute();
+        }
+        return false;
     }
 
-    public function delete_element($id): bool
+    public function delete_element($params): bool
     {
-        $sql = "DELETE FROM sections 
+        $id = array_key_exists("id", $params) ? $params["id"] : null;
+        if ($id) {
+            $sql = "DELETE FROM sections 
                 WHERE id = :id";
-        $this->db->query($sql);
-        $this->db->bind(":id", $id);
+            $this->db->query($sql);
+            $this->db->bind(":id", $id);
 
-        return $this->db->execute();
+            return $this->db->execute();
+        }
+        return false;
     }
 }

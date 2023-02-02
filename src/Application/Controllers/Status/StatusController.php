@@ -15,29 +15,43 @@ class StatusController implements StatusControllerInterface
     public function __construct(StatusModelInterface $model){
         $this->model = $model;
     }
-    public function getAll(Request $request, Response $response, $args)
+    public function getAll(Request $request, Response $response, $args): Response
     {
+        $status = $this->model->getAll($args);
+        $response->getBody()->write(json_encode($status));
+        $response->withHeader("Content-Type","application/json")->withStatus(200);
+        return $response;
+    }
+
+    public function getElement(Request $request, Response $response, $args): Response
+    {
+        $status= $this->model->getByID($args);
+        if ($status){
+            $response->getBody()->write(json_encode($status));
+            $response->withHeader("Content-Type","application/json")->withStatus(200);
+        }else{
+            $response->withStatus(404);
+        }
+        return $response;
 
     }
 
-    public function getElement(Request $request, Response $response, $args)
+    public function editElement(Request $request, Response $response, $args): Response
     {
-
+        return ($this->model->edit_element($request->getParsedBody())) ?
+            $response->withStatus(200): $response->withStatus(406);
     }
 
-    public function editElement(Request $request, Response $response, $args)
+    public function deleteElement(Request $request, Response $response, $args): Response
     {
-        // TODO: Implement editElement() method.
+        return ($this->model->delete_element($args)) ?
+            $response->withStatus(200): $response->withStatus(403);
     }
 
-    public function deleteElement(Request $request, Response $response, $args)
+    public function createElement(Request $request, Response $response, $args): Response
     {
-        // TODO: Implement deleteElement() method.
-    }
-
-    public function createElement(Request $request, Response $response, $args)
-    {
-        // TODO: Implement createElement() method.
+        return ($this->model->create_element($request->getParsedBody())) ?
+            $response->withStatus(200): $response->withStatus(403);
     }
 
 }

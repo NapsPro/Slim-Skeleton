@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Models\Sections;
 
-use App\Domain\CrudOp;
+use App\Infrastructure\Models\CrudOp;
 
 interface SectionModelInterface extends CrudOp
 {

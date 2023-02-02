@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Models\Tasks;
 
-use App\Domain\CrudOp;
+use App\Infrastructure\Models\CrudOp;
 
 interface TasksModelInterface extends CrudOp
 {

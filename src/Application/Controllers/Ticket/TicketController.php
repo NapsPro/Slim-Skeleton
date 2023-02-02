@@ -4,7 +4,6 @@ namespace App\Application\Controllers\Ticket;
 
 
 
-use App\Domain\CrudOp;
 use App\Infrastructure\Models\Tickets\TicketModelInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;

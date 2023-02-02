@@ -78,7 +78,7 @@ class DbTab implements TabsModelInterface
 
     public function delete_element($params): bool
     {
-        $slug = array_key_exists("ticket_slug", $params) ? $params["id"] : null;
+        $slug = array_key_exists("ticket_slug", $params) ? $params["ticket_slug"] : null;
         if ($slug){
             $id = explode("-",$slug)[1];
             $sql = "DELETE FROM tabs 

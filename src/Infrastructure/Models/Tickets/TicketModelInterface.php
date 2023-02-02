@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Models\Tickets;
 
-use App\Domain\CrudOp;
+use App\Infrastructure\Models\CrudOp;
 
 interface TicketModelInterface extends CrudOp
 {

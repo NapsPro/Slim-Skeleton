@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Models\Status;
 
-use App\Domain\CrudOp;
+use App\Infrastructure\Models\CrudOp;
 
 interface StatusModelInterface extends CrudOp
 {
