@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 use App\Application\Controllers\HomeController;
 use App\Application\Controllers\Section\SectionControllerInterface;
+use App\Application\Controllers\Sessions\SessionControllerInterface;
 use App\Application\Controllers\Status\StatusControllerInterface;
 use App\Application\Controllers\Tab\TabControllerInterface;
 use App\Application\Controllers\Task\TaskControllerInterface;
 use App\Application\Controllers\Ticket\TicketControllerInterface;
 use App\Application\Controllers\User\UserControllerInterface;
+use App\Application\Controllers\Sessions;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
@@ -27,6 +29,7 @@ return function (App $app) {
         $group->post('/login', UserControllerInterface::class.":login");
         $group->get("/logout", UserControllerInterface::class.":logout");
         $group->post("/register",UserControllerInterface::class.":register");
+        $group->post("/refresh", UserControllerInterface::class.":updateSession");
     });
     //-------------------- Tickets -----------------------
     $app->group("/tickets", function (Group $group){
@@ -34,7 +37,7 @@ return function (App $app) {
         $group->get("/{ticket_slug}", TicketControllerInterface::class.":getElement");
         $group->put("/{ticket_slug}", TicketControllerInterface::class.":editElement");
         $group->post("/create", TicketControllerInterface::class.":createElement");
-        $group->delete("/{id:[0-9]+}", TicketControllerInterface::class.":deleteElement");
+        $group->delete("/{ticket_slug}", TicketControllerInterface::class.":deleteElement");
     });
     //-------------------- Tabs -----------------------
     $app->group("/{ticket_slug}/tabs", function (Group $group){
@@ -54,7 +57,7 @@ return function (App $app) {
     });
     //------------------- Tasks ------------------
     $app->group("/{section_id:[0-9]+}/task", function (Group $group){
-        $group->map(["GET","POST","PUT","DELETE"],"",TaskControllerInterface::class."distributor");
+        $group->map(["GET","POST","PUT","DELETE"],"",TaskControllerInterface::class.":distributor");
     });
     //------------------ Status ------------------
     $app->group("/status", function (Group $group) {
@@ -64,4 +67,5 @@ return function (App $app) {
         $group->post("/create", StatusControllerInterface::class.":createElement");
         $group->delete("/{id:[0-9]+}", StatusControllerInterface::class.":deleteElement");
     });
+
 };

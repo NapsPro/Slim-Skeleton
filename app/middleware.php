@@ -6,4 +6,8 @@ use Slim\App;
 
 return function (App $app) {
     $app->add(SessionMiddleware::class);
+    $app->add(new Tuupola\Middleware\JwtAuthentication([
+        "secret" => "supersecretkeyyoushouldnotcommittogithub",
+        "ignore" => ["/users/login", "/users/register", "/users/refresh"]
+    ]));
 };
