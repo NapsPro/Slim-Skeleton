@@ -17,10 +17,6 @@ use Slim\App;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 return function (App $app) {
-    $app->options('/{routes:.*}', function (Request $request, Response $response) {
-        // CORS Pre-Flight OPTIONS Request Handler
-        return $response;
-    });
 
     $app->get('/', HomeController::class . ":home");
 
@@ -57,7 +53,11 @@ return function (App $app) {
     });
     //------------------- Tasks ------------------
     $app->group("/{section_id:[0-9]+}/task", function (Group $group){
-        $group->map(["GET","POST","PUT","DELETE"],"",TaskControllerInterface::class.":distributor");
+        $group->get("", TaskControllerInterface::class.":getAll");
+        $group->get("/{id:[0-9]+}", TaskControllerInterface::class.":getElement");
+        $group->put("/{id:[0-9]+}", TaskControllerInterface::class.":editElement");
+        $group->post("/create", TaskControllerInterface::class.":createElement");
+        $group->delete("/{id:[0-9]+}", TaskControllerInterface::class.":deleteElement");
     });
     //------------------ Status ------------------
     $app->group("/status", function (Group $group) {

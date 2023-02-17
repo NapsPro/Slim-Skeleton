@@ -7,7 +7,7 @@ use App\Application\Exceptions\SectionException;
 use App\Application\Exceptions\SessionException;
 use App\Infrastructure\Repository\Database;
 
-class DbSectionRepository implements SectionRepositoryInterface {
+class PdoSectionRepository implements SectionRepositoryInterface {
 
     protected $db;
 
@@ -23,7 +23,7 @@ class DbSectionRepository implements SectionRepositoryInterface {
         $id = $params["id"];
         $tab_id = $params["tab_id"];
 
-        $sql = "SELECT * FROM sections WHERE id = :section_id 
+        $sql = "SELECT * FROM Sections WHERE id = :section_id 
                      AND tab_id = :tab_id";
 
         $this->db->query($sql);
@@ -49,7 +49,7 @@ class DbSectionRepository implements SectionRepositoryInterface {
     {
         $tab_id = $params["tab_id"];
 
-        $sql = "SELECT * FROM sections WHERE tab_id= :tab_id";
+        $sql = "SELECT * FROM Sections WHERE tab_id= :tab_id";
 
         $this->db->query($sql);
         $this->db->bind(":tab_id", $tab_id);
@@ -64,13 +64,13 @@ class DbSectionRepository implements SectionRepositoryInterface {
      * @throws SectionException
      * @return bool
      */
-    public function create_element($params): bool
+    public function createElement($params): bool
     {
         $tab_id = $params["tab_id"];
         $name = array_key_exists("name", $params) ? $params["name"] : null;
 
         if ($name) {
-            $sql = "INSERT INTO sections (name, tab_id)
+            $sql = "INSERT INTO Sections (name, tab_id)
                 VALUE (:name,:tab_id)";
 
             $this->db->query($sql);
@@ -91,13 +91,13 @@ class DbSectionRepository implements SectionRepositoryInterface {
      * @return bool
      * @throws SectionException
      */
-    public function edit_element($params): bool
+    public function editElement($params): bool
     {
         $id = array_key_exists("id", $params) ? $params["id"] : null;
         $name = array_key_exists("name", $params) ? $params["name"] : null;
         $tab_id = array_key_exists("tab_id", $params) ? $params["tab_id"] : null;
         if ($id && $name && $tab_id) {
-            $sql = "UPDATE sections 
+            $sql = "UPDATE Sections 
                 SET name = :name
                 WHERE id = :id 
                 AND tab_id = :tab_id";
@@ -122,12 +122,12 @@ class DbSectionRepository implements SectionRepositoryInterface {
      * @throws SectionException
      * @return bool
      */
-    public function delete_element($params): bool
+    public function deleteElement($params): bool
     {
         $id = array_key_exists("id", $params) ? $params["id"] : null;
         $tab_id = array_key_exists("tab_id", $params) ? $params["tab_id"] : null;
         if ($id && $tab_id) {
-            $sql = "DELETE FROM sections 
+            $sql = "DELETE FROM Sections 
                 WHERE id = :id
                 AND tab_id = :tab_id";
             $this->db->query($sql);

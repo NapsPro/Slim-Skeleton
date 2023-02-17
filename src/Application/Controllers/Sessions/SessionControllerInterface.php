@@ -6,11 +6,11 @@ use App\Application\Controllers\ElementControllerInterface;
 
 interface SessionControllerInterface
 {
-public function getSession($params);
+    public function getSession($access_token);
 
-public function createSession($params);
+    public function createSession($params);
 
-public function updateSession($params);
+    public function updateSession($params);
 
-public function deleteSession($params);
+    public function deleteSession($params);
 }

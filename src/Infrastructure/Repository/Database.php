@@ -7,10 +7,10 @@ use PDOException;
 
 class Database
 {
-    private $host = "10.42.0.2";
-    private $user = "sandbox";
-    private $pass = "sandbox";
-    private $db_name = "sandbox";
+    private $host;
+    private $user;
+    private $pass;
+    private $db_name;
 
     public $dbh;
     private $stmt;
@@ -21,6 +21,11 @@ class Database
      */
     public function __construct()
     {
+        $this->host = $_ENV["DB_HOST"];
+        $this->user = $_ENV["DB_USER"];
+        $this->pass = $_ENV["DB_PASS"];
+        $this->db_name = $_ENV["DB_NAME"];
+
         $dsn = "mysql:host=" . $this->host . ";dbname=" . $this->db_name;
         $options = [
             PDO::ATTR_PERSISTENT => true,
@@ -93,7 +98,7 @@ class Database
     public function result_set(): array
     {
         $this->execute();
-        return $this->stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $this->stmt->fetchAll(PDO::FETCH_OBJ);
     }
 
     /**
@@ -103,7 +108,7 @@ class Database
     public function single()
     {
         if ($this->execute()) {
-            return $this->stmt->fetch(PDO::FETCH_ASSOC);
+            return $this->stmt->fetch(PDO::FETCH_OBJ);
         };
         die("xD");
     }

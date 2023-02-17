@@ -2,9 +2,9 @@
 
 namespace App\Infrastructure\Repository\Tasks;
 
-use App\Infrastructure\Repository\CrudOp;
+use App\Infrastructure\Repository\CrudOperation;
 
-interface TasksRepositoryInterface extends CrudOp
+interface TasksRepositoryInterface extends CrudOperation
 {
 
 }

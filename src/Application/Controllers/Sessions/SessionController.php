@@ -15,23 +15,23 @@ class SessionController implements SessionControllerInterface
     }
 
 
-    public function getSession($params)
+    public function getSession($access_token)
     {
-       $this->model->getByID($params);
+       $this->model->getSession($access_token);
     }
 
     public function updateSession($params)
     {
-        return $this->model->edit_element($params);
+        return $this->model->updateSession($params);
     }
 
     public function deleteSession($params)
     {
-        $this->model->delete_element($params);
+        $this->model->deleteSession($params);
     }
 
     public function createSession($params)
     {
-        return $this->model->create_element($params);
+        return $this->model->createSession($params);
     }
 }

@@ -2,9 +2,9 @@
 
 namespace App\Infrastructure\Repository\Sections;
 
-use App\Infrastructure\Repository\CrudOp;
+use App\Infrastructure\Repository\CrudOperation;
 
-interface SectionRepositoryInterface extends CrudOp
+interface SectionRepositoryInterface extends CrudOperation
 {
 
 }

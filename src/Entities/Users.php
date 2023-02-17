@@ -10,7 +10,12 @@ use OpenApi\Annotations as OA;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="products")
+ * @ORM\Table(name="users")
+ *
+ * @OA\Schema (
+ *     description="User Model",
+ *     title="Users"
+ * )
  */
 
 class Users
@@ -19,44 +24,127 @@ class Users
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue
+     *
+     * @OA\Property(type="integer", description="ID", title="ID")
      * @var int
      */
     private $id;
 
     /**
      * @ORM\Column (type="string", unique=true)
+     *
+     * @OA\Property(type="string", description="Username", title="Username")
+     *
      * @var string
      */
     private $username;
 
     /**
      * @ORM\Column (type="string")
+     *
+     * @OA\Property(type="string", description="Email", title="Email")
+     *
      * @var string
      */
     private $email;
 
     /**
      * @ORM\Column (type="string")
+     *
+     * @OA\Property(type="string", description="Password", title="Password")
+     *
      * @var string
      */
     private $password;
 
     /**
      * @ORM\Column (type="datetime")
+     *
+     * @OA\Property(type="datetime", description="When it was created", title="Created at")
+     *
      * @var DateTime
      */
     private $created_at;
 
-    public function authenticate($password, $hashPassword): bool
+    /**
+     * @return int
+     */
+    public function getId(): int
     {
-        return password_verify($password, $hashPassword);
+        return $this->id;
     }
 
-    public function hashPassword($password){
-        return password_hash($password, PASSWORD_DEFAULT);
+    /**
+     * @param int $id
+     */
+    public function setId(int $id): void
+    {
+        $this->id = $id;
     }
 
-    public function getUsername(){
+    /**
+     * @return string
+     */
+    public function getUsername(): string
+    {
         return $this->username;
     }
+
+    /**
+     * @param string $username
+     */
+    public function setUsername(string $username): void
+    {
+        $this->username = $username;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    /**
+     * @param string $email
+     */
+    public function setEmail(string $email): void
+    {
+        $this->email = $email;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    /**
+     * @param string $password
+     */
+    public function setPassword(string $password): void
+    {
+        $this->password = $password;
+    }
+
+    /**
+     * @return DateTime
+     */
+    public function getCreatedAt(): DateTime
+    {
+        return $this->created_at;
+    }
+
+    /**
+     * @param DateTime $created_at
+     */
+    public function setCreatedAt(DateTime $created_at): void
+    {
+        $this->created_at = $created_at;
+    }
+
+
 }

@@ -5,6 +5,7 @@ namespace App\Application\Controllers\Status;
 
 use App\Infrastructure\Repository\Status\StatusRepositoryInterface;
 use Psr\Http\Message\ResponseInterface as Response;
+use OpenApi\Annotations as OA;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 class StatusController implements StatusControllerInterface
@@ -21,7 +22,12 @@ class StatusController implements StatusControllerInterface
      *     tags={"status"},
      *     path="/status",
      *     operationId="getAllStatus",
-     *     summary= Get all Status
+     *     summary= "Get all Status",
+     *     @OA\Parameter (
+     *      name="Authorization",
+     *      in="header",
+     *      @OA\Schema (type="string", required={"Authorization"})
+     *     ),
      *       @OA\Response
      *        (response=200, description="List all Status",
      *          @OA\JsonContent(type="array", @OA\Items (ref="#/components/schemas/Status"))
@@ -32,7 +38,7 @@ class StatusController implements StatusControllerInterface
     public function getAll(Request $request, Response $response, $args): Response
     {
 
-        $status = $this->model->getAll($args);
+        $status = $this->model->getAll($request->getParsedBody());
         $response->getBody()->write(json_encode($status));
         $response->withHeader("Content-Type","application/json")->withStatus(200);
 
@@ -44,14 +50,18 @@ class StatusController implements StatusControllerInterface
      *     tags={"status"},
      *     path="/status/{id}",
      *     operationId="getStatus",
-     *     summary= Get specific Status
+     *     summary= "Get specific Status",
      *     @OA\Parameter (
-     *        name:"id",
+     *      name="Authorization",
+     *      in="header",
+     *      @OA\Schema (type="string", required={"Authorization"})
+     *     ),
+     *     @OA\Parameter (
+     *        name="id",
      *        in="path",
-     *        required=true,
-     *        description = "Status id"
+     *        description = "Status id",
      *        @OA\Schema (type="integer")
-     *      )
+     *      ),
      *       @OA\Response
      *        (response=200, description="OK",
      *          @OA\JsonContent(ref="#/components/schemas/Status")
@@ -62,7 +72,7 @@ class StatusController implements StatusControllerInterface
     public function getElement(Request $request, Response $response, $args): Response
     {
 
-        $status= $this->model->getByID($args);
+        $status= $this->model->getByID($args["id"]);
         $response->getBody()->write(json_encode($status));
         $response->withHeader("Content-Type","application/json")->withStatus(200);
 
@@ -74,30 +84,35 @@ class StatusController implements StatusControllerInterface
      *     tags={"tab"},
      *     path="/status/{id}",
      *     operationId="editStatus",
-     *     summary= Edit Status
+     *     summary= "Edit Status",
+     *     @OA\Parameter (
+     *      name="Authorization",
+     *      in="header",
+     *      @OA\Schema (type="string", required={"Authorization"})
+     *     ),
      *      @OA\Parameter (
-     *        name:"id",
+     *        name="id",
      *        in="path",
      *        required=true,
-     *        description = "Status id"
+     *        description = "Status id",
      *        @OA\Schema (type="integer")
-     *      )
+     *      ),
      *     @OA\RequestBody(
      *        @OA\MediaType(
      *              mediaType="application/json",
      *              @OA\Schema (
+     *                  required={"name"},
      *                   @OA\Property(
      *                      property="name",
      *                      type="string",
-     *                      require= true
      *                  ),
      *                  example = {"name": "My Status v2"}
      *              )
      *          )
-     *     )
-     *      @OA\Response(response="200",description="Status updated")
-     *      @OA\Response(response="400",description="Problem with request body")
-     *      @OA\Response(response="500",description="Something went wrong")
+     *     ),
+     *      @OA\Response(response="200",description="Status updated"),
+     *      @OA\Response(response="400",description="Problem with request body"),
+     *      @OA\Response(response="500",description="Something went wrong"),
      *      security={{"bearerAuth":{}}}
      * )
      */
@@ -105,9 +120,9 @@ class StatusController implements StatusControllerInterface
     {
 
         $params = $request->getParsedBody();
-        $params["id"] = $args["id"];
-        return ($this->model->edit_element($params)) ?
-            $response->withStatus(200): $response->withStatus(406);
+        $this->model->editElement($args["id"],$params);
+        $response->getBody()->write("Status edit");
+        return $response->withStatus(200);
     }
 
     /**
@@ -115,24 +130,29 @@ class StatusController implements StatusControllerInterface
      *     tags={"status"},
      *     path="/status/{id}",
      *     operationId="deleteStatus",
-     *     summary= Delete Status
+     *     summary= "Delete Status",
+     *     @OA\Parameter (
+     *      name="Authorization",
+     *      in="header",
+     *      @OA\Schema (type="string", required={"Authorization"})
+     *     ),
      *      @OA\Parameter (
-     *        name:"id",
+     *        name="id",
      *        in="path",
      *        required=true,
-     *        description = "Status id"
+     *        description = "Status id",
      *        @OA\Schema (type="integer")
-     *      )
-     *      @OA\Response(response="200",description="Delete Status")
-     *      @OA\Response(response="400",description="Problem with request body")
-     *      @OA\Response(response="500",description="Something went wrong")
+     *      ),
+     *      @OA\Response(response="200",description="Delete Status"),
+     *      @OA\Response(response="400",description="Problem with request body"),
+     *      @OA\Response(response="500",description="Something went wrong"),
      *      security={{"bearerAuth":{}}}
      * )
      */
     public function deleteElement(Request $request, Response $response, $args): Response
     {
-        $this->model->delete_element($args);
-
+        $this->model->deleteElement($args["id"],$request->getParsedBody());
+        $response->getBody()->write("Deletion complete");
         return $response->withStatus(200);
     }
 
@@ -141,30 +161,36 @@ class StatusController implements StatusControllerInterface
      *     tags={"status"},
      *     path="/status/create",
      *     operationId="createStatus",
-     *     summary= Create Status
+     *     summary= "Create Status",
+     *     @OA\Parameter (
+     *      name="Authorization",
+     *      in="header",
+     *      @OA\Schema (type="string", required={"Authorization"})
+     *     ),
      *     @OA\RequestBody(
      *        @OA\MediaType(
      *              mediaType="application/json",
      *              @OA\Schema (
+     *                  required={"name"},
      *                  @OA\Property(
      *                      property="name",
      *                      type="string"
-     *                      required=true
      *                  ),
      *                  example = {"name": "My tab"}
      *              )
      *          )
-     *     )
-     *      @OA\Response(response="201",description="Status created")
-     *      @OA\Response(response="400",description="Problem with request body")
-     *      @OA\Response(response="500",description="Something went wrong")
+     *     ),
+     *      @OA\Response(response="201",description="Status created"),
+     *      @OA\Response(response="400",description="Problem with request body"),
+     *      @OA\Response(response="500",description="Something went wrong"),
      *      security={{"bearerAuth":{}}}
      * )
      */
     public function createElement(Request $request, Response $response, $args): Response
     {
-        $this->model->create_element($request->getParsedBody());
+        $this->model->createElement($request->getParsedBody());
 
+        $response->getBody()->write("Status created");
         return $response->withStatus(200);
     }
 

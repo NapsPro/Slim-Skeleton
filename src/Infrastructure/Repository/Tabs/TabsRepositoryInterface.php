@@ -2,9 +2,9 @@
 
 namespace App\Infrastructure\Repository\Tabs;
 
-use App\Infrastructure\Repository\CrudOp;
+use App\Infrastructure\Repository\CrudOperation;
 
-interface TabsRepositoryInterface extends CrudOp
+interface TabsRepositoryInterface extends CrudOperation
 {
 
 }

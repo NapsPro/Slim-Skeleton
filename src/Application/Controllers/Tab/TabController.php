@@ -4,6 +4,7 @@ namespace App\Application\Controllers\Tab;
 
 use App\Infrastructure\Repository\Tabs\TabsRepositoryInterface ;
 use Psr\Http\Message\ResponseInterface as Response;
+use OpenApi\Annotations as OA;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 class TabController implements TabControllerInterface
@@ -18,17 +19,21 @@ class TabController implements TabControllerInterface
      *     tags={"tab"},
      *     path="/{ticket_slug}/tabs",
      *     operationId="getAllTabs",
-     *     summary= Get all Tabs
+     *     summary= "Get all Tabs",
      *     @OA\Parameter (
-     *        name:"ticket_slug",
+     *      name="Authorization",
+     *      in="header",
+     *      @OA\Schema (type="string", required={"Authorization"})
+     *     ),
+     *     @OA\Parameter (
+     *        name="ticket_slug",
      *        in="path",
-     *        required=true,
-     *        description = "Ticket slug"
+     *        description = "Ticket slug",
      *        @OA\Schema (type="string")
-     *      )
+     *      ),
      *       @OA\Response
      *        (response=200, description="List all Tabs",
-     *          @OA\JsonContent(type="array", @OA\Items (ref="#/components/schemas/Tab"))
+     *          @OA\JsonContent(type="array", @OA\Items (ref="#/components/schemas/Tabs"))
      *      ),
      *     security={{"bearerAuth":{}}}
      * )
@@ -46,37 +51,37 @@ class TabController implements TabControllerInterface
      *     tags={"tab"},
      *     path="/{ticket_slug}/tabs/{id}",
      *     operationId="getTab",
-     *     summary= Get specific Tab
+     *     summary= "Get specific Tab",
      *     @OA\Parameter (
-     *        name:"ticket_slug",
+     *      name="Authorization",
+     *      in="header",
+     *      @OA\Schema (type="string", required={"Authorization"})
+     *     ),
+     *     @OA\Parameter (
+     *        name="ticket_slug",
      *        in="path",
-     *        required=true,
-     *        description = "Ticket slug"
+     *        description = "Ticket slug",
      *        @OA\Schema (type="string")
-     *      )
+     *      ),
      *     @OA\Parameter (
-     *        name:"id",
+     *        name="id",
      *        in="path",
-     *        required=true,
-     *        description = "Tab id"
+     *        description = "Tab id",
      *        @OA\Schema (type="integer")
-     *      )
+     *      ),
      *       @OA\Response
      *        (response=200, description="OK",
-     *          @OA\JsonContent(ref="#/components/schemas/Tab")
+     *          @OA\JsonContent(ref="#/components/schemas/Tabs")
      *      ),
      *     security={{"bearerAuth":{}}}
      * )
      */
     public function getElement(Request $request, Response $response, $args): Response
     {
-        $tab= $this->model->getByID($args);
-        if ($tab){
-            $response->getBody()->write(json_encode($tab));
-            $response->withHeader("Content-Type","application/json")->withStatus(200);
-        }else{
-            $response->withStatus(404);
-        }
+        $tab= $this->model->getByID($args["id"]);
+        $response->getBody()->write(json_encode($tab));
+        $response->withHeader("Content-Type","application/json")->withStatus(200);
+
         return $response;
     }
 
@@ -85,37 +90,40 @@ class TabController implements TabControllerInterface
      *     tags={"tab"},
      *     path="/{ticket_slug}/tabs/{id}",
      *     operationId="editTab",
-     *     summary= Edit Tab
+     *     summary= "Edit Tab",
      *     @OA\Parameter (
-     *        name:"ticket_slug",
+     *      name="Authorization",
+     *      in="header",
+     *      @OA\Schema (type="string", required={"Authorization"})
+     *     ),
+     *     @OA\Parameter (
+     *        name="ticket_slug",
      *        in="path",
-     *        required=true,
-     *        description = "Ticket slug"
+     *        description = "Ticket slug",
      *        @OA\Schema (type="string")
-     *      )
+     *      ),
      *      @OA\Parameter (
-     *        name:"id",
+     *        name="id",
      *        in="path",
-     *        required=true,
-     *        description = "Tab id"
+     *        description = "Tab id",
      *        @OA\Schema (type="integer")
-     *      )
+     *      ),
      *     @OA\RequestBody(
      *        @OA\MediaType(
      *              mediaType="application/json",
      *              @OA\Schema (
+     *                  required={"name"},
      *                   @OA\Property(
      *                      property="name",
      *                      type="string",
-     *                      require= true
      *                  ),
      *                  example = {"name": "My tab v2"}
      *              )
      *          )
-     *     )
-     *      @OA\Response(response="200",description="Tab updated")
-     *      @OA\Response(response="400",description="Problem with request body")
-     *      @OA\Response(response="500",description="Something went wrong")
+     *     ),
+     *      @OA\Response(response="200",description="Tab updated"),
+     *      @OA\Response(response="400",description="Problem with request body"),
+     *      @OA\Response(response="500",description="Something went wrong"),
      *      security={{"bearerAuth":{}}}
      * )
      */
@@ -123,9 +131,10 @@ class TabController implements TabControllerInterface
     {
         $params = $request->getParsedBody();
         $params["ticket_slug"] = $args["ticket_slug"];
+        $this->model->editElement($args["id"],$params);
+        $response->getBody()->write("Tab edit");
+        return $response->withStatus(200);
 
-        return ($this->model->edit_element($params)) ?
-            $response->withStatus(200): $response->withStatus(406);
     }
 
     /**
@@ -133,61 +142,74 @@ class TabController implements TabControllerInterface
      *     tags={"tab"},
      *     path="/{ticket_slug}/tabs/{id}",
      *     operationId="deleteTab",
-     *     summary= Delete Tab
+     *     summary= "Delete Tab",
      *     @OA\Parameter (
-     *        name:"ticket_slug",
+     *      name="Authorization",
+     *      in="header",
+     *      @OA\Schema (type="string", required={"Authorization"})
+     *     ),
+     *     @OA\Parameter (
+     *        name="ticket_slug",
      *        in="path",
      *        required=true,
-     *        description = "Ticket slug"
+     *        description = "Ticket slug",
      *        @OA\Schema (type="string")
-     *      )
+     *      ),
      *      @OA\Parameter (
-     *        name:"id",
+     *        name="id",
      *        in="path",
      *        required=true,
-     *        description = "Tab id"
+     *        description = "Tab id",
      *        @OA\Schema (type="integer")
-     *      )
-     *      @OA\Response(response="200",description="Delete tab")
-     *      @OA\Response(response="400",description="Problem with request body")
-     *      @OA\Response(response="500",description="Something went wrong")
+     *      ),
+     *      @OA\Response(response="200",description="Delete tab"),
+     *      @OA\Response(response="400",description="Problem with request body"),
+     *      @OA\Response(response="500",description="Something went wrong"),
      *      security={{"bearerAuth":{}}}
      * )
      */
     public function deleteElement(Request $request, Response $response, $args): Response
     {
-        return ($this->model->delete_element($args)) ?
-            $response->withStatus(200): $response->withStatus(403);
+        $params = $request->getParsedBody();
+        $params["ticket_slug"] = $args["ticket_slug"];
+        $this->model->deleteElement($args["id"],$params);
+        $response->getBody()->write("Deletion complete");
+        return $response->withStatus(200);
     }
     /**
      * @OA\Post(
      *     tags={"tab"},
      *     path="/{ticket_slug}/tabs/create",
      *     operationId="createTab",
-     *     summary= Create Tab
+     *     summary= "Create Tab",
      *     @OA\Parameter (
-     *        name:"ticket_slug",
+     *      name="Authorization",
+     *      in="header",
+     *      @OA\Schema (type="string", required={"Authorization"})
+     *     ),
+     *     @OA\Parameter (
+     *        name="ticket_slug",
      *        in="path",
      *        required=true,
-     *        description = "Ticket slug"
+     *        description = "Ticket slug",
      *        @OA\Schema (type="string")
-     *      )
+     *      ),
      *     @OA\RequestBody(
      *        @OA\MediaType(
      *              mediaType="application/json",
      *              @OA\Schema (
+     *                  required={"name"},
      *                  @OA\Property(
      *                      property="name",
      *                      type="string"
-     *                      required=true
      *                  ),
      *                  example = {"name": "My tab"}
      *              )
      *          )
-     *     )
-     *      @OA\Response(response="201",description="Tab created")
-     *      @OA\Response(response="400",description="Problem with request body")
-     *      @OA\Response(response="500",description="Something went wrong")
+     *     ),
+     *      @OA\Response(response="201",description="Tab created"),
+     *      @OA\Response(response="400",description="Problem with request body"),
+     *      @OA\Response(response="500",description="Something went wrong"),
      *      security={{"bearerAuth":{}}}
      * )
      */
@@ -195,7 +217,8 @@ class TabController implements TabControllerInterface
     {
         $params = $request->getParsedBody();
         $params["ticket_slug"] = $args["ticket_slug"];
-        return ($this->model->create_element($params)) ?
-            $response->withStatus(200): $response->withStatus(403);
+        $this->model->createElement($params);
+        $response->getBody()->write("Tab created");
+        return $response->withStatus(200);
     }
 }

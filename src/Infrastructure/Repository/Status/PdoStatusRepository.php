@@ -5,7 +5,7 @@ namespace App\Infrastructure\Repository\Status;
 use App\Application\Exceptions\StatusException;
 use App\Infrastructure\Repository\Database;
 
-class DbStatusRepository implements StatusRepositoryInterface
+class PdoStatusRepository implements StatusRepositoryInterface
 {
     protected $db;
 
@@ -16,18 +16,17 @@ class DbStatusRepository implements StatusRepositoryInterface
     /**
      * Search for ticket in the database
      *
-     * @param array $params id (int)
+     * @param int $id
      * @throws StatusException
-     * @return array with status information
+     * @return mixed
      */
-    public function getByID($params)
+    public function getByID($id)
     {
-        $status_id = $params["id"];
 
-        $sql = "SELECT * FROM status WHERE id = :status_id";
+        $sql = "SELECT * FROM Status WHERE id = :status_id";
 
         $this->db->query($sql);
-        $this->db->bind(":status_id", $status_id);
+        $this->db->bind(":status_id", $id);
 
         $status = $this->db->single();
 
@@ -43,11 +42,11 @@ class DbStatusRepository implements StatusRepositoryInterface
      * @param array $params user_slug(string)
      * @return array with status information
      */
-    public function getAll($params, $queryParam = []): array
+    public function getAll(array $params): array
     {
-        $user_id = explode("-",$params["user_slug"])[1];
 
-        $sql = "SELECT * FROM status WHERE user_id = :user_id OR user_id IS NULL";
+        $user_id = $params["user_id"];
+        $sql = "SELECT * FROM Status WHERE user_id = :user_id OR user_id IS NULL";
 
         $this->db->query($sql);
         $this->db->bind(":user_id", $user_id);
@@ -56,20 +55,19 @@ class DbStatusRepository implements StatusRepositoryInterface
     }
 
     /**
-     * Creates a ticket and save it in the db
+     * Creates a Status and save it in the db
      *
      * @param array $params Should have user_id(int); name(string)
-     * @throws StatusException
-     * @return bool
+     *@throws StatusException
      */
-    public function create_element($params): bool
+    public function createElement(array $params)
     {
 
         $user_id = $params["user_id"];
         $name = array_key_exists("name", $params) ? $params["name"] : null;
 
         if ($name) {
-            $sql = "INSERT INTO status (name, user_id)
+            $sql = "INSERT INTO Status (name, user_id)
                 VALUE (:name,:user_id)";
 
             $this->db->query($sql);
@@ -77,7 +75,7 @@ class DbStatusRepository implements StatusRepositoryInterface
             $this->db->bind(":name", $name);
             $this->db->execute();
 
-            return $this->success_verification();
+            $this->success_verification();
         }
         throw new StatusException("Something is missing in the request see doc",400);
     }
@@ -86,26 +84,27 @@ class DbStatusRepository implements StatusRepositoryInterface
      * Edit element in the db
      *
      * @param array $params Should have id(int),name(string)
+     * @param int $id
      * @throws StatusException
-     * @return bool
      *
      */
-    public function edit_element($params): bool
+    public function editElement($id, $params)
     {
-
-        $id = $params["id"];
+        $user_id = $params["user_id"];
         $name = array_key_exists("name", $params) ? $params["name"] : null;
         if ($name) {
-            $sql = "UPDATE status 
+            $sql = "UPDATE Status 
                 SET name = :name
-                WHERE id = :id";
+                WHERE id = :id 
+                AND user_id = :user_id";
 
             $this->db->query($sql);
             $this->db->bind(":name", $name);
             $this->db->bind(":id", $id);
+            $this->db->bind(":user_id", $user_id);
             $this->db->execute();
 
-            return $this->success_verification();
+            $this->success_verification();
         }
         throw new StatusException("Something is missing in the request see doc",400);
     }
@@ -114,20 +113,21 @@ class DbStatusRepository implements StatusRepositoryInterface
      * Hard delete from db
      *
      * @param array $params With the id(int)
+     * @param int $id
      * @throws StatusException
-     * @return bool
      */
-    public function delete_element($params): bool
+    public function deleteElement($id, $params)
     {
-        $id = $params["id"];
+        $user_id = $params["user_id"];
 
-        $sql = "DELETE FROM status 
-            WHERE id = :id";
+        $sql = "DELETE FROM Status 
+            WHERE id = :id AND user_id = :user_id";
         $this->db->query($sql);
         $this->db->bind(":id", $id);
+        $this->db->bind(":user_id", $user_id);
         $this->db->execute();
 
-        return $this->success_verification();
+        $this->success_verification();
     }
 
     /**

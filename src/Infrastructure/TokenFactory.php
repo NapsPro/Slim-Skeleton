@@ -7,7 +7,7 @@ use Firebase\JWT\JWT;
 class TokenFactory
 
 {
-    private static $key = "supersecretkeyyoushouldnotcommittogithub";
+    private $key;
 
     /**
      * @param integer $expire_sec the seconds for the token last
@@ -15,7 +15,7 @@ class TokenFactory
      */
     public static function createToke($expire_sec): array
     {
-
+    $key = $_ENV["JWT_SECRET"];
     $iat = time();
     $exp = $iat + $expire_sec;
     $payload = [
@@ -25,7 +25,7 @@ class TokenFactory
         "exp" => $exp // Time when it expires
         ];
 
-    $jwt = JWT::encode($payload, self::$key , "HS256");
+    $jwt = JWT::encode($payload, $key , "HS256");
     return [
         "token" => $jwt,
         "expires" => $exp

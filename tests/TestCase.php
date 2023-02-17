@@ -36,7 +36,7 @@ class TestCase extends PHPUnit_TestCase
         $dependencies($containerBuilder);
 
         // Set up repositories
-        $repositories = require __DIR__ . '/../app/repositories.php';
+        $repositories = require __DIR__ . '/../app/repositoriesPdo.php';
         $repositories($containerBuilder);
 
         // Build PHP-DI Container instance

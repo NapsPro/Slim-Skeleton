@@ -19,6 +19,10 @@ if (false) { // Should be set to true in production
 	$containerBuilder->enableCompilation(__DIR__ . '/../var/cache');
 }
 
+//load .env in your application
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__.'/../');
+$dotenv->safeLoad();
+
 // Set up settings
 $settings = require __DIR__ . '/../app/settings.php';
 $settings($containerBuilder);
@@ -28,8 +32,12 @@ $dependencies = require __DIR__ . '/../app/dependencies.php';
 $dependencies($containerBuilder);
 
 // Set up repositories
-$repositories = require __DIR__ . '/../app/repositories.php';
+$repositories = require __DIR__ . '/../app/repositoriesPdo.php';
 $repositories($containerBuilder);
+
+//Set up controllers
+$controllers = require __DIR__ . '/../app/controllers.php';
+$controllers($containerBuilder);
 
 // Build PHP-DI Container instance
 $container = $containerBuilder->build();

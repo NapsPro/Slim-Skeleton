@@ -2,11 +2,12 @@
 
 namespace App\Infrastructure\Repository\User;
 
+use App\Entities\Users;
 use App\Infrastructure\Repository\Database;
 use App\Application\Exceptions\UserException;
 
 
-class UserRepository implements UserRepositoryInterface
+class PdoUserRepository implements UserRepositoryInterface
 {
     protected $db;
 
@@ -15,42 +16,34 @@ class UserRepository implements UserRepositoryInterface
     }
 
     /**
-     * Search for user in the database
-     *
-     * @param array $params Array containing password and username
-     * @throws UserException
-     * @return array with the user information
+     * @inheritDoc
      */
-    public function findUserByUsernamePassword($params): array
+    public function findUserByUsernamePassword(array $params)
     {
         $password = array_key_exists("password", $params) ? $params["password"] : null;
         $username = array_key_exists("username", $params) ? $params["username"] : null;
 
         if ($password && $username) {
-            $sql = "SELECT * FROM users WHERE username = :username";
+            $sql = "SELECT * FROM Users WHERE username = :username";
             $this->db->query($sql);
             $this->db->bind(":username", $params["username"]);
             $row = $this->db->single();
             if ($row){
-                $hashed_pass = $row["password"];
+                $hashed_pass = $row->password;
 
-                if (password_verify($params["password"], $hashed_pass)) {
+                if (password_verify($password, $hashed_pass)) {
                     return $row;
                 }
 
-                throw new UserException("Password or username is not correct", 400);
+                throw new UserException("Password or username is incorrect", 400);
             }
             throw new UserException("User not found", 404);
         }
         throw new UserException("Password or username missing", 400);
     }
 
-    /**
-     * Register a user to the db
-     *
-     * @param array $params Array containing password email and username
-     * @throws UserException
-     * @return bool
+    /*
+     * @inheritDoc
      */
     public function registerUser($params): bool
     {
@@ -59,7 +52,7 @@ class UserRepository implements UserRepositoryInterface
         $email = array_key_exists("email", $params) ? $params["email"] : null;
 
         if ($password && $username && $email ) {
-            $sql = "INSERT INTO users(username, password, email, created_at)
+            $sql = "INSERT INTO Users(username, password, email, created_at)
                                         VALUES(:username, :password, :email, :date)";
 
             $params["password"] = password_hash($params["password"], PASSWORD_DEFAULT);

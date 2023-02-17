@@ -2,7 +2,11 @@
 declare(strict_types=1);
 
 use App\Application\Settings\SettingsInterface;
+use App\Infrastructure\Repository\Database;
 use DI\ContainerBuilder;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\ORMSetup;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Processor\UidProcessor;
@@ -25,5 +29,15 @@ return function (ContainerBuilder $containerBuilder) {
 
             return $logger;
         },
+        EntityManagerInterface::class => function(ContainerInterface $c){
+            $settings = $c->get(SettingsInterface::class);
+            $dbSettings = $settings["doctrine"]["connection"];
+            $paths = $settings["metadata_dirs"];
+            $config = ORMSetup::createAnnotationMetadataConfiguration($paths, $settings["doctrine"]["dev_mode"]);
+            return EntityManager::create($dbSettings, $config);
+        },
+        DataBase::class => function(){
+            return new Database();
+    }
     ]);
 };

@@ -1,0 +1,1818 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Jira-Checklist",
+        "version": "0.1"
+    },
+    "servers": [
+        {
+            "url": "https://sandbox.exads.rocks"
+        }
+    ],
+    "paths": {
+        "/{tab_id}/sections": {
+            "get": {
+                "tags": [
+                    "section"
+                ],
+                "summary": "Get all Sections",
+                "operationId": "getAllSections",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "schema": {
+                            "required": [
+                                "Authorization"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "tab_id",
+                        "in": "path",
+                        "description": "Tab id",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List all Sections",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Sections"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/{tab_id}/sections/{id}": {
+            "get": {
+                "tags": [
+                    "section"
+                ],
+                "summary": "Get specific Section",
+                "operationId": "getSection",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "schema": {
+                            "required": [
+                                "Authorization"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "tab_id",
+                        "in": "path",
+                        "description": "Tab id",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Section id",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List all Sections",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Sections"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "section"
+                ],
+                "summary": "Edit Section",
+                "operationId": "editSection",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "schema": {
+                            "required": [
+                                "Authorization"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "tab_id",
+                        "in": "path",
+                        "description": "Tab id",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Section id",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "name": "My Section v2"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Section updated"
+                    },
+                    "400": {
+                        "description": "Problem with request body"
+                    },
+                    "500": {
+                        "description": "Something went wrong"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "section"
+                ],
+                "summary": "Delete Section",
+                "operationId": "deleteSection",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "schema": {
+                            "required": [
+                                "Authorization"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "tab_id",
+                        "in": "path",
+                        "description": "Tab id",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Section id",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Delete Section"
+                    },
+                    "400": {
+                        "description": "Problem with request body"
+                    },
+                    "500": {
+                        "description": "Something went wrong"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/{tab_id}/sections/create": {
+            "post": {
+                "tags": [
+                    "section"
+                ],
+                "summary": "Create Section",
+                "operationId": "createSection",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "schema": {
+                            "required": [
+                                "Authorization"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "tab_id",
+                        "in": "path",
+                        "description": "Tab id",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "name": "My tab"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Section created"
+                    },
+                    "400": {
+                        "description": "Problem with request body"
+                    },
+                    "500": {
+                        "description": "Something went wrong"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/status": {
+            "get": {
+                "tags": [
+                    "status"
+                ],
+                "summary": "Get all Status",
+                "operationId": "getAllStatus",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "schema": {
+                            "required": [
+                                "Authorization"
+                            ],
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List all Status",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Status"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/status/{id}": {
+            "get": {
+                "tags": [
+                    "status"
+                ],
+                "summary": "Get specific Status",
+                "operationId": "getStatus",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "schema": {
+                            "required": [
+                                "Authorization"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Status id",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Status"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "tab"
+                ],
+                "summary": "Edit Status",
+                "operationId": "editStatus",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "schema": {
+                            "required": [
+                                "Authorization"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Status id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "name": "My Status v2"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Status updated"
+                    },
+                    "400": {
+                        "description": "Problem with request body"
+                    },
+                    "500": {
+                        "description": "Something went wrong"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "status"
+                ],
+                "summary": "Delete Status",
+                "operationId": "deleteStatus",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "schema": {
+                            "required": [
+                                "Authorization"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Status id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Delete Status"
+                    },
+                    "400": {
+                        "description": "Problem with request body"
+                    },
+                    "500": {
+                        "description": "Something went wrong"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/status/create": {
+            "post": {
+                "tags": [
+                    "status"
+                ],
+                "summary": "Create Status",
+                "operationId": "createStatus",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "schema": {
+                            "required": [
+                                "Authorization"
+                            ],
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "name": "My tab"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Status created"
+                    },
+                    "400": {
+                        "description": "Problem with request body"
+                    },
+                    "500": {
+                        "description": "Something went wrong"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/{ticket_slug}/tabs": {
+            "get": {
+                "tags": [
+                    "tab"
+                ],
+                "summary": "Get all Tabs",
+                "operationId": "getAllTabs",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "schema": {
+                            "required": [
+                                "Authorization"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "ticket_slug",
+                        "in": "path",
+                        "description": "Ticket slug",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List all Tabs",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Tabs"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/{ticket_slug}/tabs/{id}": {
+            "get": {
+                "tags": [
+                    "tab"
+                ],
+                "summary": "Get specific Tab",
+                "operationId": "getTab",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "schema": {
+                            "required": [
+                                "Authorization"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "ticket_slug",
+                        "in": "path",
+                        "description": "Ticket slug",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Tab id",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Tabs"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "tab"
+                ],
+                "summary": "Edit Tab",
+                "operationId": "editTab",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "schema": {
+                            "required": [
+                                "Authorization"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "ticket_slug",
+                        "in": "path",
+                        "description": "Ticket slug",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Tab id",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "name": "My tab v2"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Tab updated"
+                    },
+                    "400": {
+                        "description": "Problem with request body"
+                    },
+                    "500": {
+                        "description": "Something went wrong"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "tab"
+                ],
+                "summary": "Delete Tab",
+                "operationId": "deleteTab",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "schema": {
+                            "required": [
+                                "Authorization"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "ticket_slug",
+                        "in": "path",
+                        "description": "Ticket slug",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Tab id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Delete tab"
+                    },
+                    "400": {
+                        "description": "Problem with request body"
+                    },
+                    "500": {
+                        "description": "Something went wrong"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/{ticket_slug}/tabs/create": {
+            "post": {
+                "tags": [
+                    "tab"
+                ],
+                "summary": "Create Tab",
+                "operationId": "createTab",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "schema": {
+                            "required": [
+                                "Authorization"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "ticket_slug",
+                        "in": "path",
+                        "description": "Ticket slug",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "name": "My tab"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Tab created"
+                    },
+                    "400": {
+                        "description": "Problem with request body"
+                    },
+                    "500": {
+                        "description": "Something went wrong"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/{section_id}/task": {
+            "get": {
+                "tags": [
+                    "task"
+                ],
+                "summary": "Can get a specific task by querying wit task or all the task without query",
+                "operationId": "getTaskOrGetAllTasks",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "schema": {
+                            "required": [
+                                "Authorization"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "section_id",
+                        "in": "path",
+                        "description": "Section id",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "task": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "task": 1
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Tasks"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "ticket"
+                ],
+                "summary": "Edit Task",
+                "operationId": "editTask",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "schema": {
+                            "required": [
+                                "Authorization"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "section_id",
+                        "in": "path",
+                        "description": "Section id",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "summary": {
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "status_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "name": "My checklist v2",
+                                    "id": 1,
+                                    "status_id": 2
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Task updated"
+                    },
+                    "400": {
+                        "description": "Problem with request body"
+                    },
+                    "500": {
+                        "description": "Something went wrong"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "task"
+                ],
+                "summary": "Create Task",
+                "operationId": "createTask",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "schema": {
+                            "required": [
+                                "Authorization"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "section_id",
+                        "in": "path",
+                        "description": "Section id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "summary": {
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "status_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "name": "My checklist of love",
+                                    "summary": "Things to do",
+                                    "status_id": 2
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Task created"
+                    },
+                    "400": {
+                        "description": "Problem with request body"
+                    },
+                    "500": {
+                        "description": "Something went wrong"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "task"
+                ],
+                "summary": "Delete Task",
+                "operationId": "deleteTask",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "schema": {
+                            "required": [
+                                "Authorization"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "section_id",
+                        "in": "path",
+                        "description": "Section id",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "task_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "task_id": 1
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Delete task"
+                    },
+                    "400": {
+                        "description": "Problem with request body"
+                    },
+                    "500": {
+                        "description": "Something went wrong"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tickets": {
+            "get": {
+                "tags": [
+                    "ticket"
+                ],
+                "summary": "Get all Tickets",
+                "operationId": "getAllTicket",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "schema": {
+                            "required": [
+                                "Authorization"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "ticket_slug",
+                        "in": "path",
+                        "description": "Ticket slug",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "user_id": 1
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "List all Ticket",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Tickets"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tickets/{ticket_slug}": {
+            "get": {
+                "tags": [
+                    "ticket"
+                ],
+                "summary": "Get specific Ticket",
+                "operationId": "getTicket",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "schema": {
+                            "required": [
+                                "Authorization"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "ticket_slug",
+                        "in": "path",
+                        "description": "Ticket slug",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Tickets"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "ticket"
+                ],
+                "summary": "Edit Ticket",
+                "operationId": "editTicket",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "schema": {
+                            "required": [
+                                "Authorization"
+                            ],
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id",
+                                    "name"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "integer"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "status_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "name": "My checklist v2",
+                                    "id": 1,
+                                    "status_id": 2
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ticket updated"
+                    },
+                    "400": {
+                        "description": "Problem with request body"
+                    },
+                    "500": {
+                        "description": "Something went wrong"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "ticket"
+                ],
+                "summary": "Delete Ticket",
+                "operationId": "deleteTicket",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "schema": {
+                            "required": [
+                                "Authorization"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "ticket_slug",
+                        "in": "path",
+                        "description": "Ticket slug",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "user_id",
+                                    "name"
+                                ],
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "status_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "name": "My checklist",
+                                    "user_id": 1,
+                                    "status_id": 2
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Ticket created"
+                    },
+                    "400": {
+                        "description": "Problem with request body"
+                    },
+                    "500": {
+                        "description": "Something went wrong"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tickets/create": {
+            "post": {
+                "tags": [
+                    "ticket"
+                ],
+                "summary": "Create Ticket",
+                "operationId": "createTicket",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "schema": {
+                            "required": [
+                                "Authorization"
+                            ],
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "user_id",
+                                    "name"
+                                ],
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "status_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "name": "My checklist",
+                                    "user_id": 1,
+                                    "status_id": 2
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Ticket created"
+                    },
+                    "400": {
+                        "description": "Problem with request body"
+                    },
+                    "500": {
+                        "description": "Something went wrong"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/users/login": {
+            "post": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "User login",
+                "operationId": "userLogin",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "username",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "username": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "name": "xD",
+                                    "password": "lol"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Succesfull login",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Sessions"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Problem with password or username"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    }
+                }
+            }
+        },
+        "/users/logout": {
+            "post": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "User logout",
+                "operationId": "userLogout",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "schema": {
+                            "required": [
+                                "Authorization"
+                            ],
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Succesfull logout"
+                    },
+                    "500": {
+                        "description": "Something went wrong"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/users/register": {
+            "post": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "User Register",
+                "operationId": "userRegister",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "username",
+                                    "password",
+                                    "email"
+                                ],
+                                "properties": {
+                                    "username": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "username": "xD",
+                                    "password": "lol",
+                                    "email": "xD@gmail.com"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User created"
+                    },
+                    "400": {
+                        "description": "Problem with password or username"
+                    },
+                    "500": {
+                        "description": "Something went wrong"
+                    }
+                }
+            }
+        },
+        "/users/refresh": {
+            "post": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "Refresh access token",
+                "operationId": "updateSession",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "schema": {
+                            "required": [
+                                "Authorization"
+                            ],
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Sessions"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Sections": {
+                "title": "Sections",
+                "description": "Section Model",
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "description": "ID",
+                        "type": "integer"
+                    },
+                    "name": {
+                        "title": "Name",
+                        "description": "Section Name",
+                        "type": "string"
+                    },
+                    "tab_id": {
+                        "title": "Tab id",
+                        "description": "Tab associated",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "Sessions": {
+                "title": "Sessions",
+                "description": "Sessions Model",
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "description": "ID",
+                        "type": "integer"
+                    },
+                    "user_id": {
+                        "title": "User id",
+                        "description": "User associated",
+                        "type": "integer"
+                    },
+                    "access_token": {
+                        "title": "Access token",
+                        "description": "Access Token",
+                        "type": "string"
+                    },
+                    "access_token_expire": {
+                        "title": "Expire AT",
+                        "description": "When access token expire",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "refresh_token": {
+                        "title": "Refresh Token",
+                        "description": "Refresh token",
+                        "type": "string"
+                    },
+                    "refresh_token_expire": {
+                        "title": "Expire RT",
+                        "description": "When refresh token expire",
+                        "type": "satetime"
+                    }
+                },
+                "type": "object"
+            },
+            "Status": {
+                "title": "Status",
+                "description": "Status Model",
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "description": "ID",
+                        "type": "integer"
+                    },
+                    "name": {
+                        "title": "Name",
+                        "description": "Status name",
+                        "type": "string"
+                    },
+                    "user_id": {
+                        "title": "User id",
+                        "description": "User associated with status",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "Tabs": {
+                "title": "Tabs",
+                "description": "Tab Model",
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "description": "ID",
+                        "type": "integer"
+                    },
+                    "name": {
+                        "title": "Name",
+                        "description": "Tab name",
+                        "type": "string"
+                    },
+                    "ticket_id": {
+                        "title": "Ticket id",
+                        "description": "Ticket associated with tab",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "Tasks": {
+                "title": "Tasks",
+                "description": "Task Model",
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "description": "ID",
+                        "type": "integer"
+                    },
+                    "name": {
+                        "title": "Name",
+                        "description": "Task name",
+                        "type": "string"
+                    },
+                    "summary": {
+                        "title": "Summary",
+                        "description": "Task summary",
+                        "type": "string"
+                    },
+                    "section_id": {
+                        "title": "ID",
+                        "description": "Section associated with task",
+                        "type": "integer"
+                    },
+                    "status_id": {
+                        "title": "Status id",
+                        "description": "task status",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "Tickets": {
+                "title": "Tickets",
+                "description": "Ticket Model",
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "description": "ID",
+                        "type": "integer"
+                    },
+                    "name": {
+                        "title": "Name",
+                        "description": "Ticket name",
+                        "type": "string"
+                    },
+                    "status_id": {
+                        "title": "Status id",
+                        "description": "Status of the ticket",
+                        "type": "integer"
+                    },
+                    "user_id": {
+                        "title": "user id",
+                        "description": "User associated with ticket",
+                        "type": "integer"
+                    },
+                    "slug": {
+                        "title": "Ticket slug",
+                        "description": "Ticket identifier",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "Users": {
+                "title": "Users",
+                "description": "User Model",
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "description": "ID",
+                        "type": "integer"
+                    },
+                    "username": {
+                        "title": "Username",
+                        "description": "Username",
+                        "type": "string"
+                    },
+                    "email": {
+                        "title": "Email",
+                        "description": "Email",
+                        "type": "string"
+                    },
+                    "password": {
+                        "title": "Password",
+                        "description": "Password",
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "title": "Created at",
+                        "description": "When it was created",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "use /users/login to get the JWT Token",
+                "name": "Authorization",
+                "in": "header",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    }
+}

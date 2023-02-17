@@ -62,7 +62,7 @@ class ActionPayload implements JsonSerializable
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
     public function jsonSerialize()
     {
