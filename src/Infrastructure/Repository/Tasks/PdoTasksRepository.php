@@ -4,6 +4,7 @@ namespace App\Infrastructure\Repository\Tasks;
 
 use App\Application\Exceptions\TaskException;
 use App\Infrastructure\Repository\Database;
+use Exception;
 
 
 class PdoTasksRepository implements TasksRepositoryInterface
@@ -36,11 +37,13 @@ class PdoTasksRepository implements TasksRepositoryInterface
             throw new TaskException("Task does not exist",404);
 
     }
+
     /**
      * Search for task in the database
      *
      * @param array $params section_id(id), limit(int) is Optional
      * @return array with tasks information
+     * @throws Exception
      */
 
     public function getAll(array $params): array
@@ -59,8 +62,9 @@ class PdoTasksRepository implements TasksRepositoryInterface
     /**
      * Creates a task and save it in the db
      *
-     *@param array $params Should have section_id(int) and name(string); status_id(int) and $summary are optional
-     *@throws TaskException
+     * @param array $params Should have section_id(int) and name(string); status_id(int) and $summary are optional
+     * @throws TaskException
+     * @throws Exception
      */
     public function createElement(array $params)
     {
@@ -72,21 +76,21 @@ class PdoTasksRepository implements TasksRepositoryInterface
 
         if ($name){
             $sql = "INSERT INTO Tasks (name, summary, section_id, status_id, user_id)
-            VALUE (:name,:summary, :status_id, :section_id, :user_id)";
+            VALUE (:name ,:summary, :section_id,:status_id, :user_id)";
 
             $this->db->query($sql);
             $this->db->bind(":section_id", $section_id);
             $this->db->bind(":name", $name);
             $this->db->bind(":summary", $summary);
             $this->db->bind(":status_id", $status_id);
-            $this->db->bind(":status_id", $user_id);
+            $this->db->bind(":user_id", $user_id);
 
             $this->db->execute();
 
             $this->success_verification();
+        }else {
+            throw new TaskException("Something is missing in the request see documentation", 400);
         }
-
-        throw new TaskException("Something is missing in the request see documentation",400);
     }
 
     /**
@@ -95,6 +99,7 @@ class PdoTasksRepository implements TasksRepositoryInterface
      * @param array $params Should have name(string),status_id(int),$summary(string) and section_id(int)
      * @param int $id task id
      * @throws TaskException
+     * @throws Exception
      *
      */
     public function editElement($id, $params)
@@ -125,8 +130,9 @@ class PdoTasksRepository implements TasksRepositoryInterface
             $this->db->execute();
 
             $this->success_verification();
+        }else {
+            throw new TaskException("Something is missing in the request see documentation", 400);
         }
-        throw new TaskException("Something is missing in the request see documentation",400);
     }
 
     /**
@@ -135,6 +141,7 @@ class PdoTasksRepository implements TasksRepositoryInterface
      * @param int $id
      * @param array $params With the id(int) and section id(int)
      * @throws TaskException
+     * @throws \Exception
      */
     public function deleteElement($id, $params)
     {

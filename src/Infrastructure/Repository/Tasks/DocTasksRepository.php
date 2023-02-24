@@ -4,7 +4,10 @@ namespace App\Infrastructure\Repository\Tasks;
 
 use App\Application\Exceptions\TaskException;
 use App\Application\Exceptions\TicketException;
+use App\Entities\Sections;
+use App\Entities\Status;
 use App\Entities\Tasks;
+use App\Entities\Users;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 
@@ -30,10 +33,10 @@ class DocTasksRepository implements TasksRepositoryInterface
             $task_id = $id["id"];
             $section_id = $id["section_id"];
             return $this->em->createQueryBuilder()
-                ->select("*")
+                ->select("t")
                 ->from(Tasks::class,"t")
-                ->where("t.task_id = :task_id")
-                ->andWhere("t.section_id = :section_id")
+                ->where("t.id = :task_id")
+                ->andWhere("t.section = :section_id")
                 ->setParameters(array(":task_id"=>$task_id,":section_id"=>$section_id))
                 ->getQuery()
                 ->getSingleResult();
@@ -56,9 +59,9 @@ class DocTasksRepository implements TasksRepositoryInterface
         try {
             $section_id = $params["section_id"];
             return $this->em->createQueryBuilder()
-                ->select("*")
+                ->select("t")
                 ->from(Tasks::class,"t")
-                ->where("section_id= :section_id")
+                ->where("t.section= :section_id")
                 ->setParameter(":section_id",$section_id)
                 ->getQuery()
                 ->execute();
@@ -78,26 +81,30 @@ class DocTasksRepository implements TasksRepositoryInterface
     public function createElement(array $params)
     {
 
-        $section_id = $params["section_id"];
         $status_id = array_key_exists("status_id", $params) ? $params["status_id"] : 1;
         $name = array_key_exists("name", $params) ? $params["name"] : null;
         $summary = array_key_exists("summary", $params) ? $params["summary"] : "";
-        $user_id = $params["user_id"];
         if ($name) {
-                $task = new Tasks();
-                $task->setStatusId($status_id);
-                $task->setSummary($summary);
-                $task->setStatusId($status_id);
-                $task->setUserId($user_id);
-                $task->setSectionId($section_id);
             try {
+                $section = $this->em->find(Sections::class, $params["section_id"]);
+                $user = $this->em->find(Users::class, $params["user_id"]);
+                $status = $this->em->find(Status::class, $status_id);
+                $task = new Tasks();
+                $task->setStatus($status);
+                $task->setSummary($summary);
+                $task->setName($name);
+                $task->setUser($user);
+                $task->setSection($section);
+
                 $this->em->persist($task);
                 $this->em->flush();
             }catch (Exception $exception){
                 throw new TaskException($exception->getMessage(),400);
             }
+        }else{
+            throw new TaskException("Something is missing in the request see documentation",400);
+
         }
-        throw new TaskException("Something is missing in the request see documentation",400);
     }
 
     /**
@@ -122,9 +129,9 @@ class DocTasksRepository implements TasksRepositoryInterface
                     ->set("t.name", ":name")
                     ->set("t.summary", ":summary")
                     ->set("t.status", ":status_id")
-                    ->where("id = :id")
-                    ->andWhere("section_id = :section_id")
-                    ->andWhere("user_id = :user_id")
+                    ->where("t.id = :id")
+                    ->andWhere("t.section = :section_id")
+                    ->andWhere("t.user = :user_id")
                     ->setParameters(array(
                         ":summary" => $summary,
                         ":status_id" => $status_id,
@@ -137,8 +144,10 @@ class DocTasksRepository implements TasksRepositoryInterface
             }catch (Exception $exception){
                 throw new TaskException($exception->getMessage(),404);
             }
+        }else{
+            throw new TaskException("Something is missing in the request see documentation",400);
         }
-        throw new TaskException("Something is missing in the request see documentation",400);
+
     }
 
     /**
@@ -151,13 +160,15 @@ class DocTasksRepository implements TasksRepositoryInterface
     public function deleteElement($id, $params)
     {
         $user_id = $params["user_id"];
+        $section_id = $params["section_id"];
 
         try {
             $this->em->createQueryBuilder()
                 ->delete(Tasks::class,"t")
                 ->where("t.id = :id")
-                ->andWhere("t.user_id = :user_id")
-                ->setParameters(array(":user_id"=> $user_id, ":id"=>$id))
+                ->andWhere("t.section = :section_id")
+                ->andWhere("t.user = :user_id")
+                ->setParameters(array(":user_id"=> $user_id, ":id"=>$id, ":section_id"=>$section_id))
                 ->getQuery()
                 ->execute();
         }catch (Exception $exception){

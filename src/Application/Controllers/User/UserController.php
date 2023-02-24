@@ -78,6 +78,19 @@ class UserController implements UserControllerInterface
      *      in="header",
      *      @OA\Schema (type="string", required={"Authorization"})
      *     ),
+     *       *     @OA\RequestBody(
+     *        @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema (
+     *                  required={"access_token"},
+     *                  @OA\Property(
+     *                      property="access_token",
+     *                      type="string",
+     *                  ),
+     *                  example = {"access_token": "secret expired token"},
+     *              )
+     *          )
+     *     ),
      *      @OA\Response(response="200",description="Succesfull logout"),
      *      @OA\Response(response="500",description="Something went wrong"),
      *      security={{"bearerAuth":{}}}
@@ -150,7 +163,7 @@ class UserController implements UserControllerInterface
      *        @OA\MediaType(
      *              mediaType="application/json",
      *              @OA\Schema (
-     *                  required={"access_token","refresh_token","session_id"},
+     *                  required={"access_token","refresh_token","id"},
      *                  @OA\Property(
      *                      property="access_token",
      *                      type="string",
@@ -160,11 +173,11 @@ class UserController implements UserControllerInterface
      *                      type="string"
      *                  ),
      *                  @OA\Property(
-     *                      property="session_id",
+     *                      property="id",
      *                      type="int",
      *                  ),
      *
-     *                  example = {"access_token": "secret expired token", "refresh_token":"secret refresh token", "session_id":1}
+     *                  example = {"access_token": "secret expired token", "refresh_token":"secret refresh token", "id":1}
      *              )
      *          )
      *     ),

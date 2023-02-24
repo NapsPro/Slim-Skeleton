@@ -55,7 +55,7 @@ class TicketController implements TicketControllerInterface
      */
     public function getAll(Request $request, Response $response, $args): Response
     {
-        $tickets = $this->model->getAll($request->getParsedBody()["user_id"]);
+        $tickets = $this->model->getAll($request->getParsedBody());
 
         $response->getBody()->write(json_encode($tickets));
         $response->withHeader("Content-Type","application/json")->withStatus(200);

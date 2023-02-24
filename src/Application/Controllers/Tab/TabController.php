@@ -78,7 +78,7 @@ class TabController implements TabControllerInterface
      */
     public function getElement(Request $request, Response $response, $args): Response
     {
-        $tab= $this->model->getByID($args["id"]);
+        $tab= $this->model->getByID($args);
         $response->getBody()->write(json_encode($tab));
         $response->withHeader("Content-Type","application/json")->withStatus(200);
 

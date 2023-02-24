@@ -23,7 +23,7 @@ return function (App $app) {
     // --------------------- USERS ------------------------
     $app->group('/users', function (Group $group) {
         $group->post('/login', UserControllerInterface::class.":login");
-        $group->get("/logout", UserControllerInterface::class.":logout");
+        $group->post("/logout", UserControllerInterface::class.":logout");
         $group->post("/register",UserControllerInterface::class.":register");
         $group->post("/refresh", UserControllerInterface::class.":updateSession");
     });

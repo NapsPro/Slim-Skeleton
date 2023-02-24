@@ -2,6 +2,10 @@
 
 namespace App\Entities;
 
+use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
+use OpenApi\Annotations as OA;
+
 /**
  * @ORM\Entity
  * @ORM\Table(name="Tasks")
@@ -11,7 +15,7 @@ namespace App\Entities;
  *     title="Tasks"
  * )
  */
-class Tasks
+class Tasks implements JsonSerializable
 {
     /**
      * @ORM\Id
@@ -43,34 +47,34 @@ class Tasks
     private $summary;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Section")
-     * @JoinColumn(name="section_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Sections")
+     * @ORM\JoinColumn(name="section_id", referencedColumnName="id")
      *
      * @OA\Property(type="integer", description="Section associated with task", title="ID")
      *
-     * @var integer
+     * @var Sections
      */
-    private $section_id;
+    private $section;
 
     /**
      * @ORM\ManyToOne(targetEntity="Status")
-     * @JoinColumn(name="status_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="status_id", referencedColumnName="id")
      *
      * @OA\Property(type="integer", description="task status", title="Status id")
      *
-     * @var integer
+     * @var Status
      */
-    private $status_id;
+    private $status;
 
     /**
      * @ORM\ManyToOne(targetEntity="Users")
-     * @JoinColumn(name="user_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      *
      * @OA\Property(type="integer", description="User associated with task", title="user id")
      *
-     * @var integer
+     * @var Users
      */
-    private $user_id;
+    private $user;
 
     /**
      * @return int
@@ -121,53 +125,63 @@ class Tasks
     }
 
     /**
-     * @return int
+     * @return Sections
      */
-    public function getSectionId(): int
+    public function getSection(): Sections
     {
-        return $this->section_id;
+        return $this->section;
     }
 
     /**
-     * @param int $section_id
+     * @param Sections $section
      */
-    public function setSectionId(int $section_id): void
+    public function setSection(Sections $section): void
     {
-        $this->section_id = $section_id;
+        $this->section = $section;
     }
 
     /**
-     * @return int
+     * @return Status
      */
-    public function getStatusId(): int
+    public function getStatus(): Status
     {
-        return $this->status_id;
+        return $this->status;
     }
 
     /**
-     * @param int $status_id
+     * @param Status $status
      */
-    public function setStatusId(int $status_id): void
+    public function setStatus(Status $status): void
     {
-        $this->status_id = $status_id;
+        $this->status = $status;
     }
 
     /**
-     * @return int
+     * @return Users
      */
-    public function getUserId(): int
+    public function getUser(): Users
     {
-        return $this->user_id;
+        return $this->user;
     }
 
     /**
-     * @param int $user_id
+     * @param Users $user
      */
-    public function setUserId(int $user_id): void
+    public function setUser(Users $user): void
     {
-        $this->user_id = $user_id;
+        $this->user = $user;
     }
 
 
-
+    /**
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'summary'=>$this->getSummary(),
+        ];
+    }
 }

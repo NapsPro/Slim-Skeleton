@@ -3,7 +3,9 @@
 namespace App\Infrastructure\Repository\Tickets;
 
 use App\Application\Exceptions\TicketException;
+use App\Entities\Status;
 use App\Entities\Tickets;
+use App\Entities\Users;
 use App\helpers\Slug;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -28,9 +30,9 @@ class DocTicketsRepository implements TicketRepositoryInterface
     {
         try {
             return $this->em->createQueryBuilder()
-                ->select("*")
+                ->select("t")
                 ->from(Tickets::class,"t")
-                ->where("slug = :slug")
+                ->where("t.slug = :slug")
                 ->setParameter(":slug",$id)
                 ->getQuery()
                 ->getSingleResult();
@@ -53,9 +55,9 @@ class DocTicketsRepository implements TicketRepositoryInterface
         try {
             $user_id = $params["user_id"];
             return $this->em->createQueryBuilder()
-                ->select("*")
+                ->select("t")
                 ->from(Tickets::class,"t")
-                ->where("user_id = :user_id")
+                ->where("t.user_id = :user_id")
                 ->setParameter(":user_id",$user_id)
                 ->getQuery()
                 ->execute();
@@ -73,16 +75,17 @@ class DocTicketsRepository implements TicketRepositoryInterface
      */
     public function createElement(array $params)
     {
-        $user_id =  $params["user_id"];
         $status_id = array_key_exists("status_id", $params) ? $params["status_id"] : 1;
+        $user =  $this->em->find(Users::class, $params["user_id"]);
+        $status = $this->em->find(Status::class,$status_id);
         $name = array_key_exists("name", $params) ? $params["name"] : null;
 
         if ($name) {
             $slug = Slug::slugify($name);
             $ticket = new Tickets();
             $ticket->setName($name);
-            $ticket->setUserId($user_id);
-            $ticket->setStatusId($status_id);
+            $ticket->setUserId($user);
+            $ticket->setStatusId($status);
             $ticket->setSlug($slug);
             try {
                 $this->em->persist($ticket);
@@ -91,8 +94,10 @@ class DocTicketsRepository implements TicketRepositoryInterface
                 throw new TicketException($e->getMessage(), 500);
             }
 
+        }else{
+            throw new TicketException("Something is missing in the request see doc",400);
         }
-        throw new TicketException("Something is missing in the request see doc",400);
+
     }
 
     /**
@@ -117,7 +122,7 @@ class DocTicketsRepository implements TicketRepositoryInterface
                         ->set("t.status", ":status_id")
                         ->set("t.slug", ":slug")
                         ->where("t.slug = :slug_id")
-                        ->andWhere("user_id = :user_id")
+                        ->andWhere("t.user_id = :user_id")
                         ->setParameters(array(
                             ":slug" => Slug::slugify($name),
                             ":status_id" => $status_id,
@@ -129,8 +134,10 @@ class DocTicketsRepository implements TicketRepositoryInterface
                 }catch (Exception $exception){
                     throw new TicketException($exception->getMessage(),400);
             }
-            throw new TicketException("Something is missing in the request see doc",400);
-        }
+
+        }else{
+                throw new TicketException("Something is missing in the request see doc",400);
+            }
     }
 
 
@@ -150,7 +157,7 @@ class DocTicketsRepository implements TicketRepositoryInterface
             $this->em->createQueryBuilder()
                 ->delete(Tickets::class,"t")
                 ->where("t.slug = :slug_id")
-                ->andWhere("u.user_id = :user_id")
+                ->andWhere("t.user_id = :user_id")
                 ->setParameters(array(":user_id"=> $user_id, ":slug_id"=>$slug))
                 ->getQuery()
                 ->execute();

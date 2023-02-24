@@ -17,7 +17,7 @@ class SessionController implements SessionControllerInterface
 
     public function getSession($access_token)
     {
-       $this->model->getSession($access_token);
+       return $this->model->getSession($access_token);
     }
 
     public function updateSession($params)

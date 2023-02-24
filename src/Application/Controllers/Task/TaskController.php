@@ -140,7 +140,9 @@ class TaskController implements TicketControllerInterface
      */
     public function editElement(Request $request, Response $response, $args): Response
     {
-        $this->model->editElement($args["id"], $request->getParsedBody());
+        $params = $request->getParsedBody();
+        $params["section_id"] = $args["section_id"];
+        $this->model->editElement($args["id"], $params);
         $response->getBody()->write("Task edit");
         return $response->withStatus(200);
     }
@@ -176,7 +178,9 @@ class TaskController implements TicketControllerInterface
      */
     public function deleteElement(Request $request, Response $response, $args): Response
     {
-        $this->model->deleteElement($args["id"],$request->getQueryParams());
+        $params = $request->getParsedBody();
+        $params["section_id"] = $args["section_id"];
+        $this->model->deleteElement($args["id"],$params);
         $response->getBody()->write("Deletion complete");
         return $response->withStatus(200);
     }

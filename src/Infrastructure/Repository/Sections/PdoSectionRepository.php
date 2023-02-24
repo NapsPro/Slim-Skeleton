@@ -6,6 +6,7 @@ namespace App\Infrastructure\Repository\Sections;
 use App\Application\Exceptions\SectionException;
 use App\Application\Exceptions\SessionException;
 use App\Infrastructure\Repository\Database;
+use Exception;
 
 class PdoSectionRepository implements SectionRepositoryInterface {
 
@@ -17,17 +18,18 @@ class PdoSectionRepository implements SectionRepositoryInterface {
 
     /**
      * @throws SectionException
+     * @throws Exception
      */
-    public function getByID($params)
+    public function getByID($id)
     {
-        $id = $params["id"];
-        $tab_id = $params["tab_id"];
+        $section_id = $id["id"];
+        $tab_id = $id["tab_id"];
 
         $sql = "SELECT * FROM Sections WHERE id = :section_id 
                      AND tab_id = :tab_id";
 
         $this->db->query($sql);
-        $this->db->bind(":section_id", $id);
+        $this->db->bind(":section_id", $section_id);
         $this->db->bind(":tab_id", $tab_id);
 
         $section = $this->db->single();
@@ -39,13 +41,14 @@ class PdoSectionRepository implements SectionRepositoryInterface {
     }
 
     /**
-     * Search for task in the database
+     * Search for Sections in the database
      *
      * @param array $params tab_id(id)
      * @return array with tasks information
+     * @throws Exception
      */
 
-    public function getAll($params, $queryParam = []): array
+    public function getAll(array $params): array
     {
         $tab_id = $params["tab_id"];
 
@@ -62,83 +65,98 @@ class PdoSectionRepository implements SectionRepositoryInterface {
      *
      * @param array $params Should have tab_id(int) and name(string)
      * @throws SectionException
-     * @return bool
+     * @throws Exception
      */
-    public function createElement($params): bool
+    public function createElement(array $params)
     {
         $tab_id = $params["tab_id"];
+        $user_id = $params["user_id"];
         $name = array_key_exists("name", $params) ? $params["name"] : null;
 
         if ($name) {
-            $sql = "INSERT INTO Sections (name, tab_id)
-                VALUE (:name,:tab_id)";
+            $sql = "INSERT INTO Sections (name, tab_id, user_id)
+                VALUE (:name,:tab_id,:user_id)";
 
             $this->db->query($sql);
             $this->db->bind(":name", $name);
             $this->db->bind(":tab_id", $tab_id);
+            $this->db->bind(":user_id", $user_id);
 
             $this->db->execute();
 
-            return $this->success_verification();
+           $this->success_verification();
+        }else{
+            throw new SectionException("Something is missing in the request see doc",400);
         }
-        throw new SectionException("Something is missing in the request see doc",400);
     }
 
     /**
      * Edit element in the db
      *
-     * @param array $params Should have id(int),name(string) and tab_id(int)
-     * @return bool
+     * @param array $params name(string) and tab_id(int)
+     * @param int $id
      * @throws SectionException
+     * @throws Exception
      */
-    public function editElement($params): bool
+    public function editElement($id, $params)
     {
-        $id = array_key_exists("id", $params) ? $params["id"] : null;
         $name = array_key_exists("name", $params) ? $params["name"] : null;
-        $tab_id = array_key_exists("tab_id", $params) ? $params["tab_id"] : null;
-        if ($id && $name && $tab_id) {
+        $tab_id =  $params["tab_id"];
+        $user_id = $params["user_id"];
+
+        if ($name){
             $sql = "UPDATE Sections 
                 SET name = :name
                 WHERE id = :id 
-                AND tab_id = :tab_id";
+                AND tab_id = :tab_id AND user_id = :user_id";
 
 
             $this->db->query($sql);
             $this->db->bind(":name", $name);
             $this->db->bind(":id", $id);
             $this->db->bind(":tab_id", $tab_id);
+            $this->db->bind(":user_id", $user_id);
 
             $this->db->execute();
 
-            return $this->success_verification();
+            $this->success_verification();
+        }else{
+            throw new SectionException("Something is missing in the request see doc",400);
         }
-        throw new SectionException("Something is missing in the request see doc",400);
+
     }
 
     /**
      * Hard delete from db
      *
-     * @param array $params With the id(int) and tab_id(int)
+     * @param array $params With the tab_id(int)
+     * @param int $id
      * @throws SectionException
-     * @return bool
      */
-    public function deleteElement($params): bool
+    public function deleteElement($id, $params)
     {
-        $id = array_key_exists("id", $params) ? $params["id"] : null;
-        $tab_id = array_key_exists("tab_id", $params) ? $params["tab_id"] : null;
-        if ($id && $tab_id) {
+        $tab_id = $params["tab_id"];
+        $user_id = $params["user_id"];
+
+
             $sql = "DELETE FROM Sections 
                 WHERE id = :id
-                AND tab_id = :tab_id";
+                AND tab_id = :tab_id AND user_id = :user_id";
+
+
+        try {
             $this->db->query($sql);
             $this->db->bind(":id", $id);
             $this->db->bind(":tab_id", $tab_id);
-
+            $this->db->bind(":user_id", $user_id);
             $this->db->execute();
 
-            return $this->success_verification();
+        }catch (Exception $exception){
+            throw new SectionException($exception->getMessage(),400);
         }
-        throw new SectionException("Something is missing in the request see doc",400);
+
+        $this->success_verification();
+
     }
 
     /**

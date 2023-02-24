@@ -3,7 +3,14 @@
 namespace App\Entities;
 
 
+use App\Application\Exceptions\SessionException;
 use DateTime;
+use DateTimeZone;
+use Exception;
+use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
+use OpenApi\Annotations as OA;
+require_once(__DIR__.'/../helpers/SecondsToDatetime.php');
 
 /**
  * @ORM\Entity
@@ -14,7 +21,7 @@ use DateTime;
  *     title="Sessions"
  * )
  */
-class Sessions
+class Sessions implements JsonSerializable
 {
 
     /**
@@ -30,13 +37,13 @@ class Sessions
 
     /**
      * @ORM\ManyToOne(targetEntity="Users")
-     * @JoinColumn(name="user_id", referencedColumnName="id")
+     * @ORM\JoinColumn (name="user_id", referencedColumnName = "id")
      *
      * @OA\Property(type="integer", description="User associated", title="User id")
      *
-     * @var integer
+     * @var Users
      */
-    private $user_id;
+    private $user;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -68,26 +75,26 @@ class Sessions
     /**
      * @ORM\Column (type="datetime")
      *
-     * @OA\Property(type="satetime", description="When refresh token expire", title="Expire RT")
+     * @OA\Property(type="datetime", description="When refresh token expire", title="Expire RT")
      *
      * @var DateTime
      */
     private $refresh_token_expire;
 
     /**
-     * @return int
+     * @return Users
      */
-    public function getUserId(): int
+    public function getUser(): Users
     {
-        return $this->user_id;
+        return $this->user;
     }
 
     /**
-     * @param int $user_id
+     * @param Users $user
      */
-    public function setUserId(int $user_id): void
+    public function setUser(Users $user): void
     {
-        $this->user_id = $user_id;
+        $this->user = $user;
     }
 
     /**
@@ -115,11 +122,16 @@ class Sessions
     }
 
     /**
-     * @param DateTime $access_token_expire
+     * @param int $access_token_expire
+     * @throws Exception
      */
-    public function setAccessTokenExpire(DateTime $access_token_expire): void
+    public function setAccessTokenExpire(int $access_token_expire): void
     {
-        $this->access_token_expire = $access_token_expire;
+        try {
+            $this->access_token_expire = secondsToDatetime($access_token_expire);
+        } catch (Exception $e) {
+            throw new SessionException($e->getMessage(), 400);
+        }
     }
 
     /**
@@ -147,11 +159,17 @@ class Sessions
     }
 
     /**
-     * @param DateTime $refresh_token_expire
+     * @param int $refresh_token_expire
+     * @throws Exception
      */
-    public function setRefreshTokenExpire(DateTime $refresh_token_expire): void
+    public function setRefreshTokenExpire(int $refresh_token_expire): void
     {
-        $this->refresh_token_expire = $refresh_token_expire;
+        try {
+            $this->refresh_token_expire = secondsToDatetime($refresh_token_expire);
+        }catch (Exception $e){
+            throw new SessionException($e->getMessage(),400);
+    }
+
     }
 
     /**
@@ -162,4 +180,17 @@ class Sessions
         return $this->id;
     }
 
+    /**
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'access_token' => $this->getAccessToken(),
+            'refresh_token' => $this->getRefreshToken(),
+            'access_token_expire' => $this->getAccessTokenExpire(),
+            'refresh_token_expire' => $this->getRefreshTokenExpire()
+        ];
+    }
 }

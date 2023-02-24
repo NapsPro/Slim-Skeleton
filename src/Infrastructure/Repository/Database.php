@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Repository;
 
+use Exception;
 use PDO;
 use PDOException;
 
@@ -84,33 +85,49 @@ class Database
     /**
      * Execute the prepared statement
      * @return bool
+     * @throws Exception
      */
     public function execute() :bool
     {
-        return $this->stmt->execute();
+        try {
+            return $this->stmt->execute();
+        }catch (PDOException $exception){
+            throw new Exception($exception->getMessage(),500);
+        }
     }
 
 
     /**
      * Get result set as array of objects
      * @return array
+     * @throws Exception
      */
     public function result_set(): array
     {
-        $this->execute();
-        return $this->stmt->fetchAll(PDO::FETCH_OBJ);
+        try {
+            $this->execute();
+            return $this->stmt->fetchAll(PDO::FETCH_OBJ);
+        }catch (PDOException $exception){
+            throw new Exception($exception->getMessage(),500);
+        }
     }
 
     /**
      * Get single result
      * @return mixed
+     * @throws Exception
      */
     public function single()
     {
-        if ($this->execute()) {
-            return $this->stmt->fetch(PDO::FETCH_OBJ);
-        };
-        die("xD");
+        try {
+            if ($this->execute()) {
+                return $this->stmt->fetch(PDO::FETCH_OBJ);
+            }
+            return false;
+        }catch (PDOException $exception){
+            throw new Exception($exception->getMessage(),500);
+        }
+
     }
 
     /**

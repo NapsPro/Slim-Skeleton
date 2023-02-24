@@ -2,6 +2,10 @@
 
 namespace App\Entities;
 
+use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
+use OpenApi\Annotations as OA;
+
 /**
  * @ORM\Entity
  * @ORM\Table(name="Tabs")
@@ -11,7 +15,7 @@ namespace App\Entities;
  *     title="Tabs"
  * )
  */
-class Tabs
+class Tabs implements JsonSerializable
 {
 
     /**
@@ -36,23 +40,23 @@ class Tabs
 
     /**
      * @ORM\ManyToOne(targetEntity="Tickets")
-     * @JoinColumn(name="status_id", referencedColumnName="name")
+     * @ORM\JoinColumn(name="ticket_id", referencedColumnName="id")
      *
      * @OA\Property(type="integer", description="Ticket associated with tab", title="Ticket id")
      *
-     * @var integer
+     * @var Tickets
      */
-    private $ticket_id;
+    private $ticket;
 
     /**
      * @ORM\ManyToOne(targetEntity="Users")
-     * @JoinColumn(name="user_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      *
      * @OA\Property(type="integer", description="User associated with Tab", title="user id")
      *
-     * @var integer
+     * @var Users
      */
-    private $user_id;
+    private $user;
 
     /**
      * @return int
@@ -87,37 +91,44 @@ class Tabs
     }
 
     /**
-     * @return int
+     * @return Tickets
      */
-    public function getTicketId(): int
+    public function getTicket(): Tickets
     {
-        return $this->ticket_id;
+        return $this->ticket;
     }
 
     /**
-     * @param int $ticket_id
+     * @param Tickets $ticket
      */
-    public function setTicketId(int $ticket_id): void
+    public function setTicket(Tickets $ticket): void
     {
-        $this->ticket_id = $ticket_id;
+        $this->ticket = $ticket;
     }
 
     /**
-     * @return int
+     * @return Users
      */
-    public function getUserId(): int
+    public function getUser(): Users
     {
-        return $this->user_id;
+        return $this->user;
     }
 
     /**
-     * @param int $user_id
+     * @param Users $user
      */
-    public function setUserId(int $user_id): void
+    public function setUser(Users $user): void
     {
-        $this->user_id = $user_id;
+        $this->user = $user;
     }
 
 
-
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            "ticket" => $this->getTicket()
+        ];
+    }
 }

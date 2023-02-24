@@ -3,6 +3,12 @@
 namespace App\Entities;
 
 
+
+
+use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
+use OpenApi\Annotations as OA;
+
 /**
  * @ORM\Entity
  * @ORM\Table(name="Sections")
@@ -11,7 +17,7 @@ namespace App\Entities;
  *     title="Sections"
  * )
  */
-class Sections
+class Sections implements JsonSerializable
 {
 
     /**
@@ -35,24 +41,24 @@ class Sections
     private $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Users")
-     * @JoinColumn(name="tab_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Tabs")
+     * @ORM\JoinColumn(name="tab_id", referencedColumnName="id")
      *
      * @OA\Property(type="integer", description="Tab associated", title="Tab id")
      *
-     * @var integer
+     * @var Tabs
      */
-    private $tab_id;
+    private $tab;
 
     /**
      * @ORM\ManyToOne(targetEntity="Users")
-     * @JoinColumn(name="user_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      *
      * @OA\Property(type="integer", description="User associated with Sections", title="user id")
      *
-     * @var integer
+     * @var Users
      */
-    private $user_id;
+    private $user;
 
     /**
      * @return int
@@ -87,36 +93,47 @@ class Sections
     }
 
     /**
-     * @return int
+     * @return Tabs
      */
-    public function getTabId(): int
+    public function getTab(): Tabs
     {
-        return $this->tab_id;
+        return $this->tab;
     }
 
     /**
-     * @param int $tab_id
+     * @param Tabs $tab
      */
-    public function setTabId(int $tab_id): void
+    public function setTab(Tabs $tab): void
     {
-        $this->tab_id = $tab_id;
+        $this->tab = $tab;
     }
 
     /**
-     * @return int
+     * @return Users
      */
-    public function getUserId(): int
+    public function getUser(): Users
     {
-        return $this->user_id;
+        return $this->user;
     }
 
     /**
-     * @param int $user_id
+     * @param Users $user
      */
-    public function setUserId(int $user_id): void
+    public function setUser(Users $user): void
     {
-        $this->user_id = $user_id;
+        $this->user = $user;
     }
 
 
+    /**
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            "tab" => $this->getTab()
+        ];
+    }
 }

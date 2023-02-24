@@ -21,7 +21,7 @@ class PdoTicketRepository implements TicketRepositoryInterface
      * @param array $params should have user_id(id)
      * @return array Array of arrays with ticket information
      */
-    public function getAll(array $params, $queryParam = []): array
+    public function getAll(array $params): array
     {
         $user_id = $params["user_id"];
 
@@ -82,9 +82,11 @@ class PdoTicketRepository implements TicketRepositoryInterface
 
             $this->success_verification();
 
+        }else{
+            throw new TicketException("Something is missing in the request see doc",400);
         }
 
-        throw new TicketException("Something is missing in the request see doc",400);
+
     }
 
     /**
@@ -121,8 +123,10 @@ class PdoTicketRepository implements TicketRepositoryInterface
 
             $this->success_verification();
 
+        }else{
+            throw new TicketException("Something is missing in the request see doc",400);
         }
-        throw new TicketException("Something is missing in the request see doc",400);
+
     }
 
     /**

@@ -5,6 +5,7 @@ namespace App\Infrastructure\Repository\Tabs;
 use App\Application\Exceptions\TabException;
 use App\Entities\Tabs;
 use App\Entities\Tickets;
+use App\Entities\Users;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 
@@ -27,10 +28,13 @@ class DocTabRepository implements TabsRepositoryInterface
     {
         try {
             return $this->em->createQueryBuilder()
-                ->select("*")
+                ->select("t")
                 ->from(Tabs::class,"t")
-                ->where("id = :id")
-                ->setParameter(":id",$id)
+                ->join("t.ticket","ts")
+                ->where("t.id = :id")
+                ->andWhere("ts.slug = :slug")
+                ->setParameter(":id",$id["id"])
+                ->setParameter(":slug",$id["ticket_slug"])
                 ->getQuery()
                 ->getSingleResult();
 
@@ -51,10 +55,10 @@ class DocTabRepository implements TabsRepositoryInterface
         $slug = $params["ticket_slug"];
         try {
             return $this->em->createQueryBuilder()
-                ->select("*")
+                ->select("t")
                 ->from(Tabs::class,"t")
-                ->join(Tickets::class,"ts", "WITH", "ts.slug = :slug")
-                ->where("t.ticket_id = t.id")
+                ->join("t.ticket","ts")
+                ->where("ts.slug = :slug")
                 ->setParameter(":slug",$slug)
                 ->getQuery()
                 ->execute();
@@ -72,16 +76,17 @@ class DocTabRepository implements TabsRepositoryInterface
      */
     public function createElement(array $params)
     {
-        $ticket_name = $params["ticket_slug"];
+
         $name = array_key_exists("name", $params) ? $params["name"] : null;
-        $user_id = $params["user_id"];
+
         if ($name) {
             try {
-                $ticket_id = $this->getTicket($ticket_name)->id;
+                $user =  $this->em->find(Users::class, $params["user_id"]);
+                $ticket = $this->em->getRepository(Tickets::class)->findOneBy(["slug"=>$params["ticket_slug"]]);
                 $tab = new Tabs();
-                $tab->setUserId($user_id);
+                $tab->setUser($user);
                 $tab->setName($name);
-                $tab->setTicketId($ticket_id);
+                $tab->setTicket($ticket);
 
                 $this->em->persist($tab);
                 $this->em->flush();
@@ -89,8 +94,10 @@ class DocTabRepository implements TabsRepositoryInterface
             }catch (Exception $exception){
                 throw new TabException($exception->getMessage(),400);
             }
+        }else{
+            throw new TabException("Something is missing in the request see doc",400);
         }
-        throw new TabException("Something is missing in the request see doc",400);
+
     }
 
     /**
@@ -102,21 +109,20 @@ class DocTabRepository implements TabsRepositoryInterface
      */
     public function editElement($id, $params)
     {
-        $slug = $params["ticket_slug"];
         $user_id = $params["user_id"];
         $name = array_key_exists("name", $params) ? $params["name"] : null;
         if ($name) {
             try {
+                $ticket = $this->em->getRepository(Tickets::class)->findOneBy(["slug"=>$params["ticket_slug"]]);
                 $this->em->createQueryBuilder()
                     ->update(Tabs::class,"t")
-                    ->join(Tickets::class,"ts","WITH","ts.slug = :slug")
                     ->set("t.name",":name")
-                    ->where("ts.slug = :slug")
+                    ->where("t.ticket = :ticket_id")
                     ->andWhere("t.id = :id")
-                    ->andWhere("t.user_id = :user_id")
+                    ->andWhere("t.user = :user_id")
                     ->setParameters(array(
                         ":name"=>$name,
-                        ":slug"=>$slug,
+                        ":ticket_id"=>$ticket->getId(),
                         ":user_id"=>$user_id,
                         ":id"=>$id))
                     ->getQuery()
@@ -125,8 +131,10 @@ class DocTabRepository implements TabsRepositoryInterface
                 throw new TabException($exception->getMessage());
             }
 
+        }else{
+            throw new TabException("Something is missing in the request see doc",400);
         }
-        throw new TabException("Something is missing in the request see doc",400);
+
 
     }
 
@@ -138,19 +146,17 @@ class DocTabRepository implements TabsRepositoryInterface
      */
     public function deleteElement($id, $params)
     {
-        $ticket_slug = $params["ticket_slug"];
         $user_id = $params["user_id"];
 
         try {
+            $ticket = $this->em->getRepository(Tickets::class)->findOneBy(["slug"=>$params["ticket_slug"]]);
             $this->em->createQueryBuilder()
-                ->delete("*")
-                ->from(Tabs::class,"t")
-                ->join(Tickets::class,"ts")
-                ->where("ts.slug = :ticket_slug")
+                ->delete(Tabs::class,"t")
+                ->where("t.ticket= :ticket_id")
                 ->andWhere("t.id = :id")
-                ->andWhere("t.user_id = :user_id")
+                ->andWhere("t.user = :user_id")
                 ->setParameters(array(
-                    ":slug"=>$ticket_slug,
+                    ":ticket_id"=>$ticket->getId(),
                     ":user_id"=>$user_id,
                     ":id"=>$id
                 ))
@@ -162,15 +168,5 @@ class DocTabRepository implements TabsRepositoryInterface
         }
 
     }
-    public function getTicket($ticket_name){
 
-        return $this->em->createQueryBuilder()
-            ->select("*")
-            ->from(Tickets::class,"t")
-            ->where("slug = :slug")
-            ->setParameter(":slug",$ticket_name)
-            ->getQuery()
-            ->execute();
-
-    }
 }

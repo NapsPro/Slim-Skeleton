@@ -30,11 +30,11 @@ return function (ContainerBuilder $containerBuilder) {
             return $logger;
         },
         EntityManagerInterface::class => function(ContainerInterface $c){
-            $settings = $c->get(SettingsInterface::class);
+            $settings = $c->get(SettingsInterface::class)->get();
             $dbSettings = $settings["doctrine"]["connection"];
-            $paths = $settings["metadata_dirs"];
+            $paths = $settings["doctrine"]["metadata_dirs"];
             $config = ORMSetup::createAnnotationMetadataConfiguration($paths, $settings["doctrine"]["dev_mode"]);
-            return EntityManager::create($dbSettings, $config);
+            return EntityManager::create($dbSettings,$config);
         },
         DataBase::class => function(){
             return new Database();

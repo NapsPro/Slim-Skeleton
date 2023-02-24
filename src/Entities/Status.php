@@ -2,6 +2,10 @@
 
 namespace App\Entities;
 
+use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
+use OpenApi\Annotations as OA;
+
 /**
  * @ORM\Entity
  * @ORM\Table(name="Status")
@@ -10,7 +14,7 @@ namespace App\Entities;
  *     title="Status"
  * )
  */
-class Status
+class Status implements JsonSerializable
 {
     /**
      * @ORM\Id
@@ -34,13 +38,13 @@ class Status
 
     /**
      * @ORM\ManyToOne(targetEntity="Users")
-     * @JoinColumn(name="user_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      *
      * @OA\Property(type="integer", description="User associated with status", title="User id")
      *
-     * @var integer
+     * @var Users
      */
-    private $user_id;
+    private $user;
 
     /**
      * @return int
@@ -75,21 +79,31 @@ class Status
     }
 
     /**
-     * @return int
+     * @return Users
      */
-    public function getUserId(): int
+    public function getUser(): Users
     {
-        return $this->user_id;
+        return $this->user;
     }
 
     /**
-     * @param int $user_id
+     * @param Users $user
      */
-    public function setUserId(int $user_id): void
+    public function setUser(Users $user): void
     {
-        $this->user_id = $user_id;
+        $this->user = $user;
     }
 
 
 
+    /**
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName()
+        ];
+    }
 }

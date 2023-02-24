@@ -4,6 +4,7 @@ namespace App\Infrastructure\Repository\Status;
 
 use App\Application\Exceptions\StatusException;
 use App\Entities\Status;
+use App\Entities\Users;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 
@@ -28,9 +29,9 @@ class DocStatusRepository implements StatusRepositoryInterface
     {
         try {
             return $this->em->createQueryBuilder()
-                ->select("*")
+                ->select("s")
                 ->from(Status::class,"s")
-                ->where("id = :id")
+                ->where("s.id = :id")
                 ->setParameter(":id",$id)
                 ->getQuery()
                 ->getSingleResult();
@@ -43,7 +44,7 @@ class DocStatusRepository implements StatusRepositoryInterface
     /**
      * Search for task in the database
      *
-     * @param array $params user_slug(string)
+     * @param array $params user_id
      * @throws StatusException
      * @return array with status information
      */
@@ -52,9 +53,9 @@ class DocStatusRepository implements StatusRepositoryInterface
         try {
             $user_id = $params["user_id"];
             return $this->em->createQueryBuilder()
-                        ->select("*")
+                        ->select("s")
                         ->from(Status::class, "s")
-                        ->where("user_id = :user:id")
+                        ->where("s.user = :user_id")
                         ->setParameter(":user_id", $user_id)
                         ->getQuery()
                         ->execute();
@@ -72,22 +73,23 @@ class DocStatusRepository implements StatusRepositoryInterface
      */
     public function createElement(array $params)
     {
-        $user_id = $params["user_id"];
+
         $name = array_key_exists("name", $params) ? $params["name"] : null;
 
         if ($name) {
-            $status = new Status();
-            $status->setName($name);
-            $status->setUserId($user_id);
-
             try {
+                $status = new Status();
+                $status->setName($name);
+                $user = $this->em->find(Users::class, $params["user_id"]);
+                $status->setUser($user);
                 $this->em->persist($status);
                 $this->em->flush();
             }catch (Exception $exception){
                 throw new StatusException($exception->getMessage(),400);
             }
+        }else {
+            throw new StatusException("Something is missing in the request see documentation", 400);
         }
-        throw new StatusException("Something is missing in the request see documentation",400);
     }
 
     /**
@@ -107,8 +109,8 @@ class DocStatusRepository implements StatusRepositoryInterface
                 $this->em->createQueryBuilder()
                     ->update(Status::class,"s")
                     ->set("s.name",":name")
-                    ->where("id = :id")
-                    ->andWhere("user_id = :user_id")
+                    ->where("s.id = :id")
+                    ->andWhere("s.user = :user_id")
                     ->setParameters(array(
                         ":name"=>$name,
                         ":id"=>$id,
@@ -120,8 +122,9 @@ class DocStatusRepository implements StatusRepositoryInterface
                 throw new StatusException($exception->getMessage(),400);
             }
 
+        }else{
+            throw new StatusException("Something is missing in the request see documentation",400);
         }
-        throw new StatusException("Something is missing in the request see documentation",400);
     }
 
     /**
@@ -139,7 +142,7 @@ class DocStatusRepository implements StatusRepositoryInterface
             $this->em->createQueryBuilder()
                 ->delete(Status::class,"s")
                 ->where("s.id = :id")
-                ->andWhere("user_id = :user_id")
+                ->andWhere("s.user = :user_id")
                 ->setParameters(array(":id"=>$id, ":user_id"=>$user_id))
                 ->getQuery()
                 ->execute();

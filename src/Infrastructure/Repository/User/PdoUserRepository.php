@@ -2,9 +2,8 @@
 
 namespace App\Infrastructure\Repository\User;
 
-use App\Entities\Users;
-use App\Infrastructure\Repository\Database;
 use App\Application\Exceptions\UserException;
+use App\Infrastructure\Repository\Database;
 
 
 class PdoUserRepository implements UserRepositoryInterface
@@ -16,7 +15,11 @@ class PdoUserRepository implements UserRepositoryInterface
     }
 
     /**
-     * @inheritDoc
+     * Search for user in the database
+     *
+     * @param array $params Array containing password and username
+     * @return mixed
+     *@throws UserException
      */
     public function findUserByUsernamePassword(array $params)
     {
@@ -42,8 +45,13 @@ class PdoUserRepository implements UserRepositoryInterface
         throw new UserException("Password or username missing", 400);
     }
 
-    /*
-     * @inheritDoc
+    /**
+     * Register a user to the db
+     *
+     * @param array $params Array containing password email and username
+     * @return bool
+     * @throws \Exception
+     * @throws UserException
      */
     public function registerUser($params): bool
     {

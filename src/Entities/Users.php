@@ -7,10 +7,9 @@ use Doctrine\ORM\Mapping as ORM;
 use JsonSerializable;
 use OpenApi\Annotations as OA;
 
-
 /**
  * @ORM\Entity
- * @ORM\Table(name="users")
+ * @ORM\Table(name="Users")
  *
  * @OA\Schema (
  *     description="User Model",
@@ -18,7 +17,7 @@ use OpenApi\Annotations as OA;
  * )
  */
 
-class Users
+class Users implements JsonSerializable
 {
     /**
      * @ORM\Id
@@ -138,13 +137,20 @@ class Users
         return $this->created_at;
     }
 
-    /**
-     * @param DateTime $created_at
-     */
-    public function setCreatedAt(DateTime $created_at): void
+    public function setCreatedAt(): void
     {
-        $this->created_at = $created_at;
+        $this->created_at = new DateTime("now");;
     }
 
-
+    /**
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'username' => $this->getUsername(),
+            "email"=> $this->getEmail()
+        ];
+    }
 }

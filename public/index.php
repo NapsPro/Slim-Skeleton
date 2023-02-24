@@ -32,7 +32,12 @@ $dependencies = require __DIR__ . '/../app/dependencies.php';
 $dependencies($containerBuilder);
 
 // Set up repositories
-$repositories = require __DIR__ . '/../app/repositoriesPdo.php';
+if (filter_var($_ENV["PDO"], FILTER_VALIDATE_BOOLEAN)){
+    $repositories = require __DIR__ . '/../app/repositoriesPdo.php';
+}else{
+    $repositories = require __DIR__ . '/../app/repositoriesDoctrine.php';
+}
+
 $repositories($containerBuilder);
 
 //Set up controllers

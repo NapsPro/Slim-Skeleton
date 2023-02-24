@@ -4,6 +4,7 @@ namespace App\Infrastructure\Repository\Tabs;
 
 use App\Application\Exceptions\TabException;
 use App\Infrastructure\Repository\Database;
+use Exception;
 
 class PdoTabRepository implements TabsRepositoryInterface
 {
@@ -16,17 +17,19 @@ class PdoTabRepository implements TabsRepositoryInterface
     /**
      * Search for ticket in the database
      *
-     * @param array $id id (int)
-     * @throws TabException
+     * @param array $id id (int) and ticket_slug(string)
      * @return mixed with tab information
+     * @throws Exception
+     * @throws TabException
      */
     public function getByID($id)
     {
 
-        $sql = "SELECT * FROM Tabs WHERE id = :tab_id";
+        $sql = "SELECT * FROM Tabs t JOIN Tickets ts ON ts.id=t.ticket_id WHERE t.id = :tab_id AND ts.slug = :slug";
 
         $this->db->query($sql);
-        $this->db->bind(":tab_id", $id);
+        $this->db->bind(":tab_id", $id["id"]);
+        $this->db->bind(":slug", $id["ticket_slug"]);
 
         $tab = $this->db->single();
         if ($tab) {
@@ -40,15 +43,16 @@ class PdoTabRepository implements TabsRepositoryInterface
      *
      * @param array $params ticket_slug(string),
      * @return array with tabs information
+     * @throws Exception
      */
     public function getAll(array $params): array
     {
         $slug = $params["ticket_slug"] ;
 
 
-        $sql = "SELECT * FROM Tabs t JOIN Tickets ts on ts.id = t.id WHERE ts.slug = :ticket_id";
+        $sql = "SELECT * FROM Tabs t JOIN Tickets ts on ts.id = t.ticket_id WHERE ts.slug = :ticket_slug";
         $this->db->query($sql);
-        $this->db->bind(":ticket_id", $slug);
+        $this->db->bind(":ticket_slug", $slug);
 
         return $this->db->result_set();
 
@@ -59,6 +63,7 @@ class PdoTabRepository implements TabsRepositoryInterface
      *
      * @param array $params Should have ticket_slug(string); name(string)
      * @throws TabException
+     * @throws Exception
      */
     public function createElement(array $params)
     {
@@ -69,18 +74,21 @@ class PdoTabRepository implements TabsRepositoryInterface
         if ($name) {
 
             $ticket = $this->getTicket($ticket_name);
-
-            $sql = "INSERT INTO Tabs (name, ticket_id, user_id) 
+            if ($ticket){
+                $sql = "INSERT INTO Tabs (name, ticket_id, user_id) 
                     VALUE (:name,:ticket_id, :user_id)";
 
-            $this->db->query($sql);
-            $this->db->bind(":ticket_id", $ticket->id);
-            $this->db->bind(":name", $name);
-            $this->db->bind("$:user_id", $user_id);
+                $this->db->query($sql);
+                $this->db->bind(":ticket_id", $ticket->id);
+                $this->db->bind(":name", $name);
+                $this->db->bind(":user_id", $user_id);
 
-            $this->db->execute();
+                $this->db->execute();
 
-            $this->success_verification();
+                $this->success_verification();
+            }else{
+                throw new TabException("No Ticket called ". $ticket_name, 400);
+            }
         }
         throw new TabException("Something is missing in the request see doc",400);
     }
@@ -88,8 +96,9 @@ class PdoTabRepository implements TabsRepositoryInterface
     /**
      * Edit element in the db
      *
-     * @param array $params Should have id(int),name(string), and ticket_slug(string)
+     * @param array $params Should name(string)
      * @throws TabException
+     * @throws Exception
      *
      */
     public function editElement($id, $params)
@@ -112,9 +121,11 @@ class PdoTabRepository implements TabsRepositoryInterface
             $this->db->execute();
 
             $this->success_verification();
+        }else{
+            throw new TabException("Something is missing in the request see doc",400);
         }
 
-        throw new TabException("Something is missing in the request see doc",400);
+
     }
 
     /**
@@ -122,6 +133,7 @@ class PdoTabRepository implements TabsRepositoryInterface
      *
      * @param array $params With the id(int) and ticket_id(int)
      * @throws TabException
+     * @throws Exception
      */
     public function deleteElement($id, $params)
     {
@@ -132,8 +144,8 @@ class PdoTabRepository implements TabsRepositoryInterface
         $sql = "DELETE t.* FROM Tabs t
             JOIN Tickets ts ON t.ticket_id=ts.id
             WHERE ts.slug = :ticket_slug
-            AND id = :id
-            AND user_id = :user_id";
+            AND t.id = :id
+            AND t.user_id = :user_id";
         $this->db->query($sql);
         $this->db->bind(":ticket_slug", $ticket_slug);
         $this->db->bind(":id", $id);
@@ -157,6 +169,9 @@ class PdoTabRepository implements TabsRepositoryInterface
         return true;
     }
 
+    /**
+     * @throws Exception
+     */
     public function getTicket($ticket_name){
 
         $sql = "SELECT * FROM Tickets WHERE slug = :slug";

@@ -17,8 +17,9 @@ class PdoStatusRepository implements StatusRepositoryInterface
      * Search for ticket in the database
      *
      * @param int $id
-     * @throws StatusException
      * @return mixed
+     * @throws \Exception
+     * @throws StatusException
      */
     public function getByID($id)
     {
@@ -41,6 +42,7 @@ class PdoStatusRepository implements StatusRepositoryInterface
      *
      * @param array $params user_slug(string)
      * @return array with status information
+     * @throws \Exception
      */
     public function getAll(array $params): array
     {
@@ -58,7 +60,8 @@ class PdoStatusRepository implements StatusRepositoryInterface
      * Creates a Status and save it in the db
      *
      * @param array $params Should have user_id(int); name(string)
-     *@throws StatusException
+     * @throws StatusException
+     * @throws \Exception
      */
     public function createElement(array $params)
     {
@@ -76,8 +79,10 @@ class PdoStatusRepository implements StatusRepositoryInterface
             $this->db->execute();
 
             $this->success_verification();
+        }else{
+            throw new StatusException("Something is missing in the request see doc",400);
         }
-        throw new StatusException("Something is missing in the request see doc",400);
+
     }
 
     /**
@@ -86,6 +91,7 @@ class PdoStatusRepository implements StatusRepositoryInterface
      * @param array $params Should have id(int),name(string)
      * @param int $id
      * @throws StatusException
+     * @throws \Exception
      *
      */
     public function editElement($id, $params)
@@ -105,8 +111,10 @@ class PdoStatusRepository implements StatusRepositoryInterface
             $this->db->execute();
 
             $this->success_verification();
+        }else{
+            throw new StatusException("Something is missing in the request see doc",400);
         }
-        throw new StatusException("Something is missing in the request see doc",400);
+
     }
 
     /**
@@ -115,6 +123,7 @@ class PdoStatusRepository implements StatusRepositoryInterface
      * @param array $params With the id(int)
      * @param int $id
      * @throws StatusException
+     * @throws \Exception
      */
     public function deleteElement($id, $params)
     {

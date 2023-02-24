@@ -2,6 +2,10 @@
 
 namespace App\Entities;
 
+use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
+use OpenApi\Annotations as OA;
+
 /**
  * @ORM\Entity
  * @ORM\Table(name="Tickets")
@@ -11,7 +15,7 @@ namespace App\Entities;
  *     title="Tickets"
  * )
  */
-class Tickets
+class Tickets implements JsonSerializable
 {
     /**
      * @ORM\Id
@@ -35,21 +39,21 @@ class Tickets
 
     /**
      * @ORM\ManyToOne(targetEntity="Status")
-     * @JoinColumn(name="status_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="status_id", referencedColumnName="id")
      *
      * @OA\Property(type="integer", description="Status of the ticket", title="Status id")
      *
-     * @var integer
+     * @var Status
      */
-    private $status_id;
+    private $status;
 
     /**
      * @ORM\ManyToOne(targetEntity="Users")
-     * @JoinColumn(name="user_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      *
      * @OA\Property(type="integer", description="User associated with ticket", title="user id")
      *
-     * @var integer
+     * @var Users
      */
     private $user_id;
 
@@ -96,33 +100,33 @@ class Tickets
     }
 
     /**
-     * @return int
+     * @return Status
      */
-    public function getStatusId(): int
+    public function getStatusId(): Status
     {
-        return $this->status_id;
+        return $this->status;
     }
 
     /**
-     * @param int $status_id
+     * @param Status $status
      */
-    public function setStatusId(int $status_id): void
+    public function setStatusId(Status $status): void
     {
-        $this->status_id = $status_id;
+        $this->status = $status;
     }
 
     /**
-     * @return int
+     * @return Users
      */
-    public function getUserId(): int
+    public function getUserId(): Users
     {
         return $this->user_id;
     }
 
     /**
-     * @param int $user_id
+     * @param Users $user_id
      */
-    public function setUserId(int $user_id): void
+    public function setUserId(Users $user_id): void
     {
         $this->user_id = $user_id;
     }
@@ -143,4 +147,15 @@ class Tickets
         $this->slug = $slug;
     }
 
+    /**
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            "status" =>$this->getStatusId()
+        ];
+    }
 }

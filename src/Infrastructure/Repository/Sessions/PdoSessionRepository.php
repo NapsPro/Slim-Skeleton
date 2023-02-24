@@ -55,8 +55,9 @@ class PdoSessionRepository implements SessionRepositoryInterface
      * Creates a ticket and save it in the db
      *
      * @param object $params Should have user_id(int);
-     * @throws SessionException
      * @return array with the session info
+     * @throws \Exception
+     * @throws SessionException
      */
     public function createSession($params): array
     {
@@ -109,7 +110,7 @@ class PdoSessionRepository implements SessionRepositoryInterface
     {
         $session = $this->getByAllFields($params);
 
-        if (strtotime($session["refresh_token_expire"]) < time()){
+        if (strtotime($session->refresh_token_expire) < time()){
             throw new SessionException("refresh token as expired pls log in again", 401);
         }
 
@@ -133,14 +134,14 @@ class PdoSessionRepository implements SessionRepositoryInterface
         $this->db->bind(":refresh_token",$refresh_token);
         $this->db->bind(":refresh_token_expire",date("Y-m-d H:i:s",$refresh_token_expire_seconds));
         $this->db->bind(":access_token_expire",date("Y-m-d H:i:s",$access_token_expire_seconds));
-        $this->db->bind(":session_id",$session["id"]);
-        $this->db->bind(":user_id",$session["user_id"]);
+        $this->db->bind(":session_id",$session->id);
+        $this->db->bind(":user_id",$session->user_id);
         $this->db->execute();
 
         $this->success_verification();
         return array(
-            "id"=>$session["id"],
-            "user_id" => $session["user_id"],
+            "id"=>$session->id,
+            "user_id" => $session->user_id,
             "refresh_token"=> $refresh_token,
             "access_token"=> $access_token,
             "access_token_expires_in" => $access_token_expire_seconds,
@@ -157,7 +158,7 @@ class PdoSessionRepository implements SessionRepositoryInterface
     public function deleteSession($params)
     {
 
-        $access_token = $params["token"];
+        $access_token = $params["access_token"];
         $user_id = $params["user_id"];
 
         $sql = "DELETE from Sessions where access_token = :access_token AND user_id = :user_id";

@@ -132,10 +132,9 @@ class SectionController implements SectionControllerInterface
     public function editElement(Request $request, Response $response, $args): Response
     {
         $params = $request->getParsedBody();
-        $params["id"] = $args["id"];
         $params["tab_id"] = $args["tab_id"];
-        $this->model->editElement($params);
-
+        $this->model->editElement($args["id"], $params);
+        $response->getBody()->write("Section edit");
         return $response->withStatus(200);
     }
 
@@ -170,8 +169,10 @@ class SectionController implements SectionControllerInterface
      */
     public function deleteElement(Request $request, Response $response, $args): Response
     {
-        $this->model->deleteElement($args);
-
+        $params = $request->getParsedBody();
+        $params["tab_id"] = $args["tab_id"];
+        $this->model->deleteElement($args["id"], $params);
+        $response->getBody()->write("Deletion complete");
         return $response->withStatus(200);
     }
 
@@ -215,8 +216,8 @@ class SectionController implements SectionControllerInterface
     {
         $params = $request->getParsedBody();
         $params["tab_id"] = $args["tab_id"];
-        $this->model->createElement($params);
-
+        $section = $this->model->createElement($params);
+        $response->getBody()->write("Section created");
         return $response->withStatus(200);
     }
 }

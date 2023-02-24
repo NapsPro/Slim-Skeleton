@@ -17,7 +17,11 @@ class DocUserRepository implements UserRepositoryInterface
     }
 
     /**
-     * @inheritDoc
+     * Search for user in the database
+     *
+     * @param array $params Array containing password and username
+     * @return Users
+     *@throws UserException
      */
     public function findUserByUsernamePassword(array $params):Users
     {
@@ -27,14 +31,14 @@ class DocUserRepository implements UserRepositoryInterface
         if ($password && $username){
             try {
                 $row = $this->em->createQueryBuilder()
-                    ->select("*")
+                    ->select("u")
                     ->from(Users::class,"u")
                     ->where("u.username = :username")
                     ->setParameter(":username",$username)
                     ->getQuery()
                     ->getSingleResult();
 
-                $hash_pass = $row->password;
+                $hash_pass = $row->getPassword();
                 if (password_verify($password, $hash_pass)){
                     return $row;
                 }
@@ -47,10 +51,13 @@ class DocUserRepository implements UserRepositoryInterface
         throw new UserException("Password or username missing", 400);
     }
 
-    /*
-     * @inheritDoc
+    /**
+     * Register a user to the db
+     *
+     * @param array $params Array containing password email and username
+     * @throws UserException
      */
-    public function registerUser($params):bool
+    public function registerUser($params)
     {
         $password = array_key_exists("password", $params) ? $params["password"] : null;
         $username = array_key_exists("username", $params) ? $params["username"] : null;
@@ -60,10 +67,13 @@ class DocUserRepository implements UserRepositoryInterface
             $user->setEmail($email);
             $user->setPassword(password_hash($password, PASSWORD_DEFAULT));
             $user->setUsername($username);
+            $user->setCreatedAt();
             $this->em->persist($user);
             $this->em->flush();
 
+        }else{
+            throw new UserException("Password, username or email is missing", 400);
         }
-        throw new UserException("Password, username or email is missing", 400);
+
     }
 }
